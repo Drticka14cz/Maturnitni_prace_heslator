@@ -1,0 +1,7 @@
+<!DOCTYPE RCC>
+<RCC version="1.0">
+    <qresource prefix="/icons">
+        <file>check_3.png</file>
+        <file>radio_2.png</file>
+    </qresource>
+</RCC>

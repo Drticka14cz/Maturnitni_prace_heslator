@@ -1,0 +1,4 @@
+tkinter disegner - mid - vždy se musí přepsat, vypisuje občas mrdky + problém s přepisem do Ctk z tk
+pyQT6 - QT disegner je přá good, populární u použití, propojení s C++
+pyside6 - ofiko QT, lepší licence, používanější X není rozdíl orpoti pyside6
+flet - kdybch chtěl pracovat i na telefon

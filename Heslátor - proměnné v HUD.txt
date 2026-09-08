@@ -1,0 +1,143 @@
+Heslátor - proměnné v HUD
+stránky:
+0 login
+1 menu
+2 rozbor
+3 penezenka
+4 generator
+5 info
+6 nastavení
+ASI PAK 7 ZALOZENÍ
+
+0 - login
+
+marginy - L a R  30
+	T a B 15
+	hlavní spacing 40
+font-size: 12pt normal, nadpis 18pt, menší nadpis 14pt, malý text 10pt
+
+
+#######
+0 login
+login_lineEdit_jmeno
+login_lineEdit_heslo
+login_button_prihlasit
+login_label_poznamka
+login_button_do_zalozeni
+######
+1 menu
+butony: menu_button_nazev(př.:menu_button_generator)
+L
+menu_button_generator
+menu_button_penezenka
+menu_button_rozbor
+menu_button_nastaveni
+menu_button_info
+P
+menu_button_quickGen
+menu_button_quickCopy
+menu_button_quickSave
+menu_button_quickReset
+
+#####
+2 rozbor
+rozbor_button_menu
+
+Levá strana - input a historie
+rozbor_input
+rozbor_button_rozebrat
+rozbor_button_historie_zobrazit
+rozbor_button_historie_delete
+rozbor_historie_scrollArea
+----------
+Pravá strana - rozbor
+rozbor_label_heslo
+
+rozbor_progressBar_sila
+rozbor_label_popisSily
+rozbor_label_score
+
+rozbor_progressBar_cas
+rozbor_label_popisCasu
+rozbor_label_cas
+
+rozbor_label_delka
+rozbor_label_mala
+rozbor_label_velka
+rozbor_label_cisla
+rozbor_label_spec
+rozbor_label_slovnikova
+#####
+3 penezenka
+penezenka_button_menu
+L
+--
+penezenka_input_jmeno
+penezenka_input_heslo
+penezenka_input_platforma
+penezenka_input_poznamka
+penezenka_button_ulozit
+
+P
+---
+scroll_area_vypis_hesel
+penezenka_widget
+####
+4 generator
+generator_button_menu
+L
+--
+generator_radioButton_heslo
+generator_radioButton_fraze
+
+generator_pocet_znaminek
+generator_label_pocet_znaku
+generator_check_mala
+generator_check_velka
+generator_check_velka
+generator_check_spec
+generator_check_slovnikova
+generator_lineEdit_vlastni
+
+
+generator_pocet_slov
+generator_check_upravaFraze
+
+
+generator_button_generovat
+P
+--
+generator_label_vysledek
+generator_button_kopirovat
+
+
+
+
+####
+5 info
+info_button_menu
+
+####
+6 nastavení
+nastaveni_button_menu
+
+
+####
+7 zalozeni
+zalozeni_lineEdit_jmeno
+zalozeni_lineEdit_heslo
+zalozeni_lineEdit_heslo_znovu
+zalozeni_label_poznamka
+zalozeni_button_zalozit
+zalozeni_button_zalozit
+CSS
+pozadi 
+#stackedWidget{
+background-color: #2B4141;
+
+}
+widgety background-color: #0EB1D2;
+
+
+
+poznámky: pozor na QWIdget - občas to domrdá QSS z mainwindow. 
