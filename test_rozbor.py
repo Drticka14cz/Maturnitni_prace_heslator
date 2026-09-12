@@ -7,7 +7,7 @@ sys.stdout.reconfigure(encoding="utf-8")
 
 dir_path = os.path.dirname(os.path.abspath(__file__))
 work_dir = os.path.join(dir_path, "work_files")
-large_slovnik = os.path.join(work_dir, "large_en_slovnik.txt")
+large_slovnik = os.path.join(work_dir, "Pwdb_top-10000000.txt")
 # with open(large_slovnik, "r", encoding="utf-8") as f:
 #     slovnikk = f.read()
 #     print(slovnikk)
@@ -52,6 +52,8 @@ class Rozbor:
 
     def kontrola(self):
         # běh funkce kontrola
+        self.rozbor_pismen()
+        self.potencialni_znaky()
         self.obsah_slovnikoveho_slova()
 
     def potencialni_znaky(self):
@@ -63,8 +65,9 @@ class Rozbor:
             self.pot_zn += len(string.digits)
         if self.spec > 0:
             self.pot_zn += len(string.punctuation)
-
+        print(self.pot_zn)
         self.raw_bits = self.delka * math.log2(self.pot_zn)
+        print(f"Entropie hesla je: {self.raw_bits}")
 
     def obsah_slovnikoveho_slova(self):
 
@@ -73,7 +76,7 @@ class Rozbor:
 
         velikost_slovniku = len(slovnik)
         minimal_lenght = 3
-        nalezeno = bool
+        nalezeno = False
 
         heslo_lower = self.heslo.lower()
         self.slovnikova_penalizace = 0
@@ -96,10 +99,10 @@ class Rozbor:
                     nalezeno = True
                     self.penalized_bits += entropie_slova
 
-                    # print(f"Slovo: {slovo}  a heslo {heslo_lower}")  # smazat
-                    # print(f"index slova: {idx}")  # smazat
-                    # print(f"Entropie: {entropie_slova}")  # smazat
-                    # print(f"penalizace slovníkem je: {self.penalized_bits}")  # smazat
+                    print(f"Slovo: {slovo}  a heslo {heslo_lower}")  # smazat
+                    print(f"index slova: {idx}")  # smazat
+                    print(f"Entropie: {entropie_slova}")  # smazat
+                    print(f"penalizace slovníkem je: {self.penalized_bits}")  # smazat
             if not nalezeno:
                 break
 
@@ -157,79 +160,79 @@ class Rozbor:
 
         # print(sekundy , minuty, hodiny, dny, tydny, mesice, roky)
 
-    # def rozbor_pismen(self):
-    #     for i in self.heslo:
-    #         if self.minuly_znak_presne == i:
-    #             self.pocet_minuly_presne += 1
-    #             if self.pocet_minuly_presne == 1:
-    #                 self.score -= 0.5
+    def rozbor_pismen(self):
+        for i in self.heslo:
+            if self.minuly_znak_presne == i:
+                self.pocet_minuly_presne += 1
+                if self.pocet_minuly_presne == 1:
+                    self.score -= 0.5
 
-    #             if self.pocet_minuly_presne == 2:
-    #                 self.score -= 1
+                if self.pocet_minuly_presne == 2:
+                    self.score -= 1
 
-    #             if self.pocet_minuly_presne >= 3:
-    #                 self.score -= self.pocet_minuly_presne / 2 + 0.5
+                if self.pocet_minuly_presne >= 3:
+                    self.score -= self.pocet_minuly_presne / 2 + 0.5
 
-    #         else:
-    #             self.minuly_znak_presne = i
-    #             self.pocet_minuly_presne = 0
-    #         if i.islower():
-    #             self.mala += 1
-    #             if self.minuly_znak == "m":
-    #                 if self.pocet_minuly >= 6:
-    #                     self.score -= 2
-    #                 elif self.pocet_minuly >= 3:
-    #                     self.score -= 0.5
-    #                 else:
-    #                     self.score += 1
-    #                 self.pocet_minuly += 1
-    #             else:
-    #                 self.score += 1.5
-    #                 self.minuly_znak = "m"
-    #                 self.pocet_minuly = 0
-    #         if i.isupper():
-    #             self.velka += 1
-    #             if self.minuly_znak == "v":
-    #                 if self.pocet_minuly >= 6:
-    #                     self.score -= 2
-    #                 elif self.pocet_minuly >= 3:
-    #                     self.score -= 0.5
-    #                 else:
-    #                     self.score += 1
-    #                 self.pocet_minuly += 1
-    #             else:
-    #                 self.score += 1.5
-    #                 self.minuly_znak = "v"
-    #                 self.pocet_minuly = 0
-    #         if i.isdigit():
-    #             self.cislo += 1
-    #             if self.minuly_znak == "c":
-    #                 if self.pocet_minuly >= 6:
-    #                     self.score -= 2
-    #                 elif self.pocet_minuly >= 3:
-    #                     self.score -= 0.5
-    #                 else:
-    #                     self.score += 1
-    #                 self.pocet_minuly += 1
-    #             else:
-    #                 self.score += 1.5
-    #                 self.minuly_znak = "c"
-    #                 self.pocet_minuly = 0
+            else:
+                self.minuly_znak_presne = i
+                self.pocet_minuly_presne = 0
+            if i.islower():
+                self.mala += 1
+                if self.minuly_znak == "m":
+                    if self.pocet_minuly >= 6:
+                        self.score -= 2
+                    elif self.pocet_minuly >= 3:
+                        self.score -= 0.5
+                    else:
+                        self.score += 1
+                    self.pocet_minuly += 1
+                else:
+                    self.score += 1.5
+                    self.minuly_znak = "m"
+                    self.pocet_minuly = 0
+            if i.isupper():
+                self.velka += 1
+                if self.minuly_znak == "v":
+                    if self.pocet_minuly >= 6:
+                        self.score -= 2
+                    elif self.pocet_minuly >= 3:
+                        self.score -= 0.5
+                    else:
+                        self.score += 1
+                    self.pocet_minuly += 1
+                else:
+                    self.score += 1.5
+                    self.minuly_znak = "v"
+                    self.pocet_minuly = 0
+            if i.isdigit():
+                self.cislo += 1
+                if self.minuly_znak == "c":
+                    if self.pocet_minuly >= 6:
+                        self.score -= 2
+                    elif self.pocet_minuly >= 3:
+                        self.score -= 0.5
+                    else:
+                        self.score += 1
+                    self.pocet_minuly += 1
+                else:
+                    self.score += 1.5
+                    self.minuly_znak = "c"
+                    self.pocet_minuly = 0
 
-    #         if i in string.punctuation:
-    #             self.spec += 1
-    #             if self.minuly_znak == "s":
-    #                 if self.pocet_minuly >= 6:
-    #                     self.score -= 1.5
-    #                 elif self.pocet_minuly >= 3:
-    #                     self.score -= 0.5
-    #                 else:
-    #                     self.score += 1.5
-    #                 self.pocet_minuly += 1
-    #             else:
-    #                 self.score += 2
-    #                 self.minuly_znak = "s"
-    #                 self.pocet_minuly = 0
+            if i in string.punctuation:
+                self.spec += 1
+                if self.minuly_znak == "s":
+                    if self.pocet_minuly >= 6:
+                        self.score -= 1.5
+                    elif self.pocet_minuly >= 3:
+                        self.score -= 0.5
+                    else:
+                        self.score += 1.5
+                    self.pocet_minuly += 1
+                else:
+                    self.score += 2
+                    self.minuly_znak = "s"
+                    self.pocet_minuly = 0
 
     # penalizace za chybejici typy znaku
     def penalizace(self):
@@ -289,4 +292,4 @@ class Rozbor:
             self.score_class = 1
 
 
-Rozbor("erika123vincentkokot")
+Rozbor("slaviajakub123passwordheslo")
