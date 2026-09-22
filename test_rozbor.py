@@ -38,6 +38,7 @@ class Rozbor:
         self.poznamka = ""
         self.score_class = 0
         self.raw_bits = 0.0
+        self.final_bits = 0.0
         # rozbor hesla - znaky
         self.znaky = {}
 
@@ -59,6 +60,7 @@ class Rozbor:
         self.potencialni_znaky()
         self.obsah_slovnikoveho_slova()
         self.entropie_znaku()
+        self.penalizace()
         # for i in self.znaky:
         #     print(f"{i} je {self.znaky[i]}krát")
 
@@ -71,7 +73,7 @@ class Rozbor:
             self.pot_zn += len(string.digits)
         if self.spec > 0:
             self.pot_zn += len(string.punctuation)
-        print(self.pot_zn)
+        print(f"Potencialnich znaku je {self.pot_zn}")
         self.raw_bits = self.delka * math.log2(self.pot_zn)
         print(f"Entropie hesla je: {self.raw_bits}")
 
@@ -105,10 +107,11 @@ class Rozbor:
                     nalezeno = True
                     self.penalized_bits += entropie_slova
 
-                    print(f"Slovo: {slovo}  a heslo {heslo_lower}")  # smazat
-                    print(f"index slova: {idx}")  # smazat
-                    print(f"Entropie: {entropie_slova}")  # smazat
-                    print(f"penalizace slovníkem je: {self.penalized_bits}")  # smazat
+                    # print(f"Slovo: {slovo}  a heslo {heslo_lower}")  # smazat
+                    # print(f"index slova: {idx}")  # smazat
+                    # print(f"Entropie: {entropie_slova}")  # smazat
+                    # print(f"penalizace slovníke  m je: {self.penalized_bits}")  # smazat
+
             if not nalezeno:
                 break
 
@@ -119,15 +122,18 @@ class Rozbor:
         print(f"max je asi {maximalni_entropie_znaku}")
         for i in self.znaky:
             p = self.znaky[i] / self.delka
-            print(f"Pecko je {p}")
+            # print(f"Pecko je {p}")
             soucin = p * math.log2(p)
-            print(f"soucin je {soucin}")
+            # print(f"soucin je {soucin}")
             soucin = -soucin
             celkova_entropie_znaku += soucin
-            print(f"Celkova entropie znaku {celkova_entropie_znaku}")
+            # print(f"Celkova entropie znaku {celkova_entropie_znaku}")
 
         # vypocet procenta
-        procento = (celkova_entropie_znaku / maximalni_entropie_znaku) * 100
+        print(f"Celkova entropie znaku {celkova_entropie_znaku}")
+        procento = celkova_entropie_znaku / maximalni_entropie_znaku
+        self.penalized_coeficient = procento
+        procento = procento * 100
         print(f"procento je {procento}%")
 
     # def potencialni_cas(self):
@@ -186,21 +192,13 @@ class Rozbor:
 
     def rozbor_pismen(self):
         for i in self.heslo:
-            print(self.znaky)
+            # print(self.znaky)
             if i in self.znaky:
                 self.znaky[i] += 1
             else:
                 self.znaky[i] = 1
             if self.minuly_znak_presne == i:
                 self.pocet_minuly_presne += 1
-                # if self.pocet_minuly_presne == 1:
-                #     self.score -= 0.5
-
-                # if self.pocet_minuly_presne == 2:
-                #     self.score -= 1
-
-                # if self.pocet_minuly_presne >= 3:
-                #     self.score -= self.pocet_minuly_presne / 2 + 0.5
 
             else:
                 self.minuly_znak_presne = i
@@ -208,71 +206,46 @@ class Rozbor:
             if i.islower():
                 self.mala += 1
                 if self.minuly_znak == "m":
-                    # if self.pocet_minuly >= 6:
-                    #     self.score -= 2
-                    # elif self.pocet_minuly >= 3:
-                    #     self.score -= 0.5
-                    # else:
-                    #     self.score += 1
+
                     self.pocet_minuly += 1
                 else:
-                    # self.score += 1.5
+
                     self.minuly_znak = "m"
                     self.pocet_minuly = 0
             if i.isupper():
                 self.velka += 1
                 if self.minuly_znak == "v":
-                    # if self.pocet_minuly >= 6:
-                    #     self.score -= 2
-                    # elif self.pocet_minuly >= 3:
-                    #     self.score -= 0.5
-                    # else:
-                    #     self.score += 1
+
                     self.pocet_minuly += 1
                 else:
-                    # self.score += 1.5
+
                     self.minuly_znak = "v"
                     self.pocet_minuly = 0
             if i.isdigit():
                 self.cislo += 1
                 if self.minuly_znak == "c":
-                    # if self.pocet_minuly >= 6:
-                    #     self.score -= 2
-                    # elif self.pocet_minuly >= 3:
-                    #     self.score -= 0.5
-                    # else:
-                    #     self.score += 1
+
                     self.pocet_minuly += 1
                 else:
-                    # self.score += 1.5
+
                     self.minuly_znak = "c"
                     self.pocet_minuly = 0
 
             if i in string.punctuation:
                 self.spec += 1
                 if self.minuly_znak == "s":
-                    # if self.pocet_minuly >= 6:
-                    #     self.score -= 1.5
-                    # elif self.pocet_minuly >= 3:
-                    #     self.score -= 0.5
-                    # else:
-                    #     self.score += 1.5
+
                     self.pocet_minuly += 1
                 else:
-                    # self.score += 2
+
                     self.minuly_znak = "s"
                     self.pocet_minuly = 0
 
-    # penalizace za chybejici typy znaku
-    # def penalizace(self):
-    #     if self.mala == 0:
-    #         self.score -= 2
-    #     if self.velka == 0:
-    #         self.score -= 2
-    #     if self.cislo == 0:
-    #         self.score -= 2
-    #     if self.spec == 0:
-    #         self.score -= 2
+    def penalizace(self):
+        print(f"penalizace slovníkem je: {self.penalized_bits}")
+        self.final_bits = self.raw_bits * self.penalized_coeficient
+        self.final_bits = self.final_bits - self.penalized_bits
+        print(f"Finální bity jsou: {self.final_bits}")
 
     # def vyhodnoceni(self):
     #     # vyhodnoceni
@@ -321,4 +294,4 @@ class Rozbor:
     #         self.score_class = 1
 
 
-Rozbor("Jakub140228.98OE2,SteP")
+Rozbor("aaaaAAAaAAAA")
