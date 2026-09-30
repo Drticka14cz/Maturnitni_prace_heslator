@@ -107,10 +107,10 @@ class Rozbor:
                     nalezeno = True
                     self.penalized_bits += entropie_slova
 
-                    # print(f"Slovo: {slovo}  a heslo {heslo_lower}")  # smazat
-                    # print(f"index slova: {idx}")  # smazat
-                    # print(f"Entropie: {entropie_slova}")  # smazat
-                    # print(f"penalizace slovníke  m je: {self.penalized_bits}")  # smazat
+                    print(f"Slovo: {slovo}  a heslo {heslo_lower}")  # smazat
+                    print(f"index slova: {idx}")  # smazat
+                    print(f"Entropie: {entropie_slova}")  # smazat
+                    print(f"penalizace slovníke  m je: {self.penalized_bits}")  # smazat
 
             if not nalezeno:
                 break
@@ -131,7 +131,8 @@ class Rozbor:
 
         # vypocet procenta
         print(f"Celkova entropie znaku {celkova_entropie_znaku}")
-        procento = celkova_entropie_znaku / maximalni_entropie_znaku
+        if maximalni_entropie_znaku > 0: procento = celkova_entropie_znaku / maximalni_entropie_znaku
+        else: procento = 0
         self.penalized_coeficient = procento
         procento = procento * 100
         print(f"procento je {procento}%")
@@ -294,4 +295,4 @@ class Rozbor:
     #         self.score_class = 1
 
 
-Rozbor("aaaaAAAaAAAA")
+Rozbor("1")
