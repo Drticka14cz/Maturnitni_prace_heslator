@@ -4,7 +4,6 @@ import os
 import sys
 
 sys.stdout.reconfigure(encoding="utf-8")
-
 dir_path = os.path.dirname(os.path.abspath(__file__))
 work_dir = os.path.join(dir_path, "work_files")
 large_slovnik = os.path.join(work_dir, "Pwdb_top-10000000.txt")
@@ -295,4 +294,4 @@ class Rozbor:
     #         self.score_class = 1
 
 
-Rozbor("1")
+Rozbor("")
