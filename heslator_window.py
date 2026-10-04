@@ -142,21 +142,42 @@ class Heslator(QMainWindow):
     def rozbor(self):
         heslo = self.ui.rozbor_input.text().strip()
         self.ui.rozbor_progressBar_sila.setRange(0, 0)
-        hodnoty = Rozbor(heslo)
-
+        self.worker = Worker(Rozbor, heslo)
+        self.worker.finished.connect(self.rozbor_dokoncen)
+        # self.worker.error.connect(self.rozbor_chyba)
+        self.worker.finished.connect(self.worker.deleteLater)
+        # hodnoty = Rozbor(heslo)
+        # barva_sily = hodnoty.barva_sily
         self.ui.rozbor_label_heslo.setText(heslo)
-        self.ui.rozbor_label_score.setText(str(hodnoty.final_bits))
+        self.worker.start()
+
+    def rozbor_dokoncen(self, data):
+
+        self.ui.rozbor_label_score.setText(str(data["final_bits"]))
         self.ui.rozbor_progressBar_sila.setRange(
             0, 150
         )  # nastaví minimální a maximální hodnotu pro progressbar
 
-        self.ui.rozbor_progressBar_sila.setValue(hodnoty.final_bits)
-        # self.ui.rozbor_button_rozebrat.clicked.connect(
-        #     lambda: Rozbor(
-        #         self.ui.rozbor_input.text().strip(), print("Posílám rozebrat")
-        #     )  # LAMBDA - vnořená funkce - volá rovnou rozbor a posílá heslo z inputu
-        # )
+        self.ui.rozbor_progressBar_sila.setValue(data["final_bits"])
+        self.ui.rozbor_progressBar_sila.setFormat("%v")
+        self.ui.rozbor_progressBar_sila.setStyleSheet(f"""
+        /* PROGRESS BAR*/
+QProgressBar{{
+border: 2px solid  black;
+border-radius:8px;
+height:5px;
+text-align: center
+}}
+QProgressBar::chunk{{
+background-color:{data["barva_sily"]};/* Mění barvu progress baru*/
+width:5px;
+}}
 
+
+""")
+
+    def rozbor_chyba(self):
+        print("chyba v rozboru")
         # ------3 PENĚŽENKA------
 
         # ------4 GENERÁTOR ------

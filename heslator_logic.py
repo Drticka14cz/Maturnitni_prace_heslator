@@ -6,6 +6,7 @@ import json
 import sys
 import string
 import math
+from PySide6.QtCore import QThread, Signal
 
 sys.stdout.reconfigure(encoding="utf-8")  # pro změnu šifrování znaků v terminálu
 
@@ -208,6 +209,7 @@ class Rozbor:
         self.score_class = 0
         self.raw_bits = 0.0
         self.final_bits = 0.0
+        self.barva_sily = ""
         # rozbor hesla - znaky
         self.znaky = {}
 
@@ -231,6 +233,11 @@ class Rozbor:
         self.obsah_slovnikoveho_slova()
         self.entropie_znaku()
         self.penalizace()
+        self.vyhodnoceni()
+        return {
+            "final_bits": self.final_bits,
+            "barva_sily": self.barva_sily,
+        }
         # for i in self.znaky:
         #     print(f"{i} je {self.znaky[i]}krát")
 
@@ -417,51 +424,17 @@ class Rozbor:
         self.final_bits = self.final_bits - self.penalized_bits
         print(f"Finální bity jsou: {self.final_bits}")
 
-    # def vyhodnoceni(self):
-    #     # vyhodnoceni
-    #     if int(self.delka) < 8:
-    #         self.delka2 = "je kratké (alespoň 8 znaků) "
-    #     if int(self.delka) >= 8:
-    #         self.delka2 = "je dostatečně dlouhé. "
-    #     if int(self.mala) < 2:
-    #         self.mala2 = "obsahuje málo malých písmen. (alespoň 2) "
-    #     if int(self.mala) >= 2:
-    #         self.mala2 = "obsahuje dostatečné množství malých písmen. "
-    #     if int(self.cislo) < 2:
-    #         self.cislo2 = "obsahuje málo čísel. (alespoň 2) "
-    #     if int(self.cislo) >= 2:
-    #         self.cislo2 = "obsahuje dostatek čísel. "
-    #     if int(self.spec) < 2:
-    #         self.spec2 = "obsahuje málo speciálních znaků(př. !@#$%^&*()_+-=[]{}|\\:;\"',.<>/?). (alespoň 2) "
-    #     if int(self.spec) >= 2:
-    #         self.spec2 = "obsahuje dostatečné množství speciálních znaků. "
-    #     if int(self.velka) < 2:
-    #         self.velka2 = "obsahuje málo velkých písmen. (alespoň 2) "
-    #     if int(self.velka) >= 2:
-    #         self.velka2 = "obsahuje dostatečné množstvívelkých písmen. "
-
-    #     self.score = round(self.score, 2)
-    #     if self.score < 0:
-    #         self.score = 0
-
-    #     if self.score > 100:
-    #         self.score2 = f"Tvé heslo je extrémně silné. (score: {self.score})"
-    #         self.score_class = 6
-    #     elif self.score > 80:
-    #         self.score2 = f"Tvé heslo je velmi silné. (score: {self.score})"
-    #         self.score_class = 5
-    #     elif self.score > 60:
-    #         self.score2 = f"Tvé heslo je silné. (score: {self.score})"
-    #         self.score_class = 4
-    #     elif self.score > 40:
-    #         self.score2 = f"Tvé heslo není silné. (score: {self.score})"
-    #         self.score_class = 3
-    #     elif self.score > 25:
-    #         self.score2 = f"Tvé heslo je slabé. (score: {self.score})"
-    #         self.score_class = 2
-    #     elif self.score <= 25:
-    #         self.score2 = f"Tvé heslo je velmi slabé. (score: {self.score})"
-    #         self.score_class = 1
+    def vyhodnoceni(self):
+        if self.final_bits > 100:
+            self.barva_sily = "blue"
+        elif self.final_bits > 80:
+            self.barva_sily = "green"
+        elif self.final_bits > 60:
+            self.barva_sily = "yellow"
+        elif self.final_bits > 40:
+            self.barva_sily = "orange"
+        else:
+            self.barva_sily = "red"
 
 
 class Generator:
@@ -477,3 +450,25 @@ class Ulozeni:
 class Nastaveni:
     def __init__(self):
         pass
+
+
+class Worker(QThread):
+    finished = Signal(dict)
+
+    def __init__(self, metoda, heslo):
+
+        super().__init__()
+        self.metoda = metoda
+        self.heslo = heslo
+        print("Init workera")
+
+    def run(self):
+        try:
+            print("posílám do rozboru")
+            # rozebrano = self.metoda(self.heslo)
+            # self.finished.emit(rozebrano)
+            rozebrano = Rozbor(self.heslo)
+            vysledek = rozebrano.kontrola()
+            self.finished.emit(vysledek)
+        except:
+            print("problem")

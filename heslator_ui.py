@@ -152,7 +152,19 @@ class Ui_MainWindow(object):
 "    border: 3px solid #F0F7F4;\n"
 "border-radius:6px;\n"
 "}\n"
-"")
+"\n"
+"/* PROGRESS BAR*/\n"
+"QProgressBar{\n"
+"border: 2px solid  black;\n"
+"border-radius:8px;\n"
+"height:5px;\n"
+"text-align: "
+                        "center\n"
+"}\n"
+"QProgressBar::chunk{\n"
+"background-color:black;/* M\u011bn\u00ed barvu progress baru*/\n"
+"width:5px;\n"
+"}")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.centralwidget.setStyleSheet(u"")
@@ -573,7 +585,7 @@ class Ui_MainWindow(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents_4 = QWidget()
         self.scrollAreaWidgetContents_4.setObjectName(u"scrollAreaWidgetContents_4")
-        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 384, 730))
+        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 384, 830))
         self.scrollAreaWidgetContents_4.setStyleSheet(u"#scrollAreaWidgetContents_4 >QWidget{\n"
 " background-color: #05C1FF;\n"
 "    border-radius: 16px;\n"
@@ -588,7 +600,7 @@ class Ui_MainWindow(object):
         self.verticalLayout_16.setContentsMargins(10, 10, 10, 10)
         self.widget_17 = QWidget(self.scrollAreaWidgetContents_4)
         self.widget_17.setObjectName(u"widget_17")
-        self.widget_17.setMinimumSize(QSize(0, 700))
+        self.widget_17.setMinimumSize(QSize(0, 800))
         self.verticalLayout_12 = QVBoxLayout(self.widget_17)
         self.verticalLayout_12.setSpacing(10)
         self.verticalLayout_12.setObjectName(u"verticalLayout_12")
@@ -751,6 +763,7 @@ class Ui_MainWindow(object):
 
         self.widget_35 = QWidget(self.widget_27)
         self.widget_35.setObjectName(u"widget_35")
+        self.widget_35.setMinimumSize(QSize(0, 70))
         self.horizontalLayout_18 = QHBoxLayout(self.widget_35)
         self.horizontalLayout_18.setSpacing(0)
         self.horizontalLayout_18.setObjectName(u"horizontalLayout_18")
@@ -760,6 +773,13 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_18.addWidget(self.rozbor_label_slovnikova)
 
+        self.rozbor_label_slovnikova_widget = QWidget(self.widget_35)
+        self.rozbor_label_slovnikova_widget.setObjectName(u"rozbor_label_slovnikova_widget")
+
+        self.horizontalLayout_18.addWidget(self.rozbor_label_slovnikova_widget)
+
+        self.horizontalLayout_18.setStretch(0, 1)
+        self.horizontalLayout_18.setStretch(1, 2)
 
         self.verticalLayout_15.addWidget(self.widget_35)
 
@@ -1206,7 +1226,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scroll_area_vypis_hesel = QWidget()
         self.scroll_area_vypis_hesel.setObjectName(u"scroll_area_vypis_hesel")
-        self.scroll_area_vypis_hesel.setGeometry(QRect(0, 0, 435, 718))
+        self.scroll_area_vypis_hesel.setGeometry(QRect(0, 0, 88, 718))
         self.verticalLayout_27 = QVBoxLayout(self.scroll_area_vypis_hesel)
         self.verticalLayout_27.setObjectName(u"verticalLayout_27")
         self.penezenka_widget = QWidget(self.scroll_area_vypis_hesel)
@@ -1783,7 +1803,7 @@ class Ui_MainWindow(object):
         self.scrollArea_3.setWidgetResizable(True)
         self.scrollAreaWidgetContents_2 = QWidget()
         self.scrollAreaWidgetContents_2.setObjectName(u"scrollAreaWidgetContents_2")
-        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 473, 525))
+        self.scrollAreaWidgetContents_2.setGeometry(QRect(0, 0, 96, 26))
         self.scrollArea_3.setWidget(self.scrollAreaWidgetContents_2)
 
         self.gridLayout_21.addWidget(self.scrollArea_3, 0, 0, 1, 1)
@@ -2009,7 +2029,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(7)
+        self.stackedWidget.setCurrentIndex(2)
 
 
         QMetaObject.connectSlotsByName(MainWindow)

@@ -142,7 +142,18 @@ QSlider::handle:horizontal:hover {
     border: 3px solid #F0F7F4;
 border-radius:6px;
 }
-</string>
+
+/* PROGRESS BAR*/
+QProgressBar{
+border: 2px solid  black;
+border-radius:8px;
+height:5px;
+text-align: center
+}
+QProgressBar::chunk{
+background-color:black;/* Mění barvu progress baru*/
+width:5px;
+}</string>
   </property>
   <widget class="QWidget" name="centralwidget">
    <property name="styleSheet">
@@ -193,7 +204,7 @@ background-color: #3a3a39;
 }</string>
       </property>
       <property name="currentIndex">
-       <number>7</number>
+       <number>2</number>
       </property>
       <widget class="QWidget" name="log_in">
        <layout class="QGridLayout" name="gridLayout">
@@ -877,7 +888,7 @@ background-color:#3a3a39;
                 <x>0</x>
                 <y>0</y>
                 <width>384</width>
-                <height>730</height>
+                <height>830</height>
                </rect>
               </property>
               <property name="styleSheet">
@@ -911,7 +922,7 @@ background-color:#3a3a39;
                  <property name="minimumSize">
                   <size>
                    <width>0</width>
-                   <height>700</height>
+                   <height>800</height>
                   </size>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_12" stretch="1,3,3,4">
@@ -1226,7 +1237,13 @@ background-color:#3a3a39;
                      </item>
                      <item>
                       <widget class="QWidget" name="widget_35" native="true">
-                       <layout class="QHBoxLayout" name="horizontalLayout_18">
+                       <property name="minimumSize">
+                        <size>
+                         <width>0</width>
+                         <height>70</height>
+                        </size>
+                       </property>
+                       <layout class="QHBoxLayout" name="horizontalLayout_18" stretch="1,2">
                         <property name="spacing">
                          <number>0</number>
                         </property>
@@ -1248,6 +1265,9 @@ background-color:#3a3a39;
                            <string>Slovníková slova</string>
                           </property>
                          </widget>
+                        </item>
+                        <item>
+                         <widget class="QWidget" name="rozbor_label_slovnikova_widget" native="true"/>
                         </item>
                        </layout>
                       </widget>
@@ -2036,7 +2056,7 @@ color:black	;
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>435</width>
+                   <width>88</width>
                    <height>718</height>
                   </rect>
                  </property>
@@ -3005,8 +3025,8 @@ color:black	;
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>473</width>
-                   <height>525</height>
+                   <width>96</width>
+                   <height>26</height>
                   </rect>
                  </property>
                 </widget>
