@@ -154,16 +154,28 @@ class Ui_MainWindow(object):
 "}\n"
 "\n"
 "/* PROGRESS BAR*/\n"
-"QProgressBar{\n"
+"QProgressBar:horizontal{\n"
 "border: 2px solid  black;\n"
 "border-radius:8px;\n"
 "height:5px;\n"
-"text-align: "
-                        "center\n"
+"t"
+                        "ext-align: center\n"
 "}\n"
-"QProgressBar::chunk{\n"
+"QProgressBar::chunk:horizontal{\n"
 "background-color:black;/* M\u011bn\u00ed barvu progress baru*/\n"
 "width:5px;\n"
+"}\n"
+"\n"
+"QProgressBar:vertical {\n"
+"    border: 2px solid black;\n"
+"    border-radius: 8px;\n"
+"    width: 5px;\n"
+"    text-align: center;\n"
+"}\n"
+"\n"
+"QProgressBar::chunk:vertical {\n"
+"    background-color: black; /* M\u011bn\u00ed barvu progress baru */\n"
+"    height: 5px;\n"
 "}")
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
@@ -585,7 +597,7 @@ class Ui_MainWindow(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents_4 = QWidget()
         self.scrollAreaWidgetContents_4.setObjectName(u"scrollAreaWidgetContents_4")
-        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 384, 830))
+        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, -264, 384, 830))
         self.scrollAreaWidgetContents_4.setStyleSheet(u"#scrollAreaWidgetContents_4 >QWidget{\n"
 " background-color: #05C1FF;\n"
 "    border-radius: 16px;\n"
@@ -638,7 +650,7 @@ class Ui_MainWindow(object):
 
         self.rozbor_progressBar_sila = QProgressBar(self.widget_24)
         self.rozbor_progressBar_sila.setObjectName(u"rozbor_progressBar_sila")
-        self.rozbor_progressBar_sila.setValue(24)
+        self.rozbor_progressBar_sila.setValue(0)
 
         self.verticalLayout_13.addWidget(self.rozbor_progressBar_sila)
 
@@ -693,14 +705,21 @@ class Ui_MainWindow(object):
         self.verticalLayout_15.setContentsMargins(0, 0, 0, 0)
         self.widget_16 = QWidget(self.widget_27)
         self.widget_16.setObjectName(u"widget_16")
-        self.horizontalLayout_8 = QHBoxLayout(self.widget_16)
-        self.horizontalLayout_8.setSpacing(0)
-        self.horizontalLayout_8.setObjectName(u"horizontalLayout_8")
-        self.horizontalLayout_8.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_44 = QVBoxLayout(self.widget_16)
+        self.verticalLayout_44.setSpacing(10)
+        self.verticalLayout_44.setObjectName(u"verticalLayout_44")
+        self.verticalLayout_44.setContentsMargins(5, 5, 5, 5)
         self.rozbor_label_delka = QLabel(self.widget_16)
         self.rozbor_label_delka.setObjectName(u"rozbor_label_delka")
 
-        self.horizontalLayout_8.addWidget(self.rozbor_label_delka)
+        self.verticalLayout_44.addWidget(self.rozbor_label_delka, 0, Qt.AlignmentFlag.AlignHCenter)
+
+        self.rozbor_progressBar_delka = QProgressBar(self.widget_16)
+        self.rozbor_progressBar_delka.setObjectName(u"rozbor_progressBar_delka")
+        self.rozbor_progressBar_delka.setValue(0)
+        self.rozbor_progressBar_delka.setOrientation(Qt.Orientation.Horizontal)
+
+        self.verticalLayout_44.addWidget(self.rozbor_progressBar_delka)
 
 
         self.verticalLayout_15.addWidget(self.widget_16)
@@ -716,6 +735,11 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_13.addWidget(self.rozbor_label_mala)
 
+        self.rozbor_label_mala_hodnota = QLabel(self.widget_31)
+        self.rozbor_label_mala_hodnota.setObjectName(u"rozbor_label_mala_hodnota")
+
+        self.horizontalLayout_13.addWidget(self.rozbor_label_mala_hodnota)
+
 
         self.verticalLayout_15.addWidget(self.widget_31)
 
@@ -729,6 +753,11 @@ class Ui_MainWindow(object):
         self.rozbor_label_velka.setObjectName(u"rozbor_label_velka")
 
         self.horizontalLayout_15.addWidget(self.rozbor_label_velka)
+
+        self.rozbor_label_velka_hodnota = QLabel(self.widget_32)
+        self.rozbor_label_velka_hodnota.setObjectName(u"rozbor_label_velka_hodnota")
+
+        self.horizontalLayout_15.addWidget(self.rozbor_label_velka_hodnota)
 
 
         self.verticalLayout_15.addWidget(self.widget_32)
@@ -744,6 +773,11 @@ class Ui_MainWindow(object):
 
         self.horizontalLayout_16.addWidget(self.rozbor_label_cisla)
 
+        self.rozbor_label_cisla_hodnota = QLabel(self.widget_33)
+        self.rozbor_label_cisla_hodnota.setObjectName(u"rozbor_label_cisla_hodnota")
+
+        self.horizontalLayout_16.addWidget(self.rozbor_label_cisla_hodnota)
+
 
         self.verticalLayout_15.addWidget(self.widget_33)
 
@@ -757,6 +791,11 @@ class Ui_MainWindow(object):
         self.rozbor_label_spec.setObjectName(u"rozbor_label_spec")
 
         self.horizontalLayout_17.addWidget(self.rozbor_label_spec)
+
+        self.rozbor_label_spec_hodnota = QLabel(self.widget_34)
+        self.rozbor_label_spec_hodnota.setObjectName(u"rozbor_label_spec_hodnota")
+
+        self.horizontalLayout_17.addWidget(self.rozbor_label_spec_hodnota)
 
 
         self.verticalLayout_15.addWidget(self.widget_34)
@@ -775,6 +814,13 @@ class Ui_MainWindow(object):
 
         self.rozbor_label_slovnikova_widget = QWidget(self.widget_35)
         self.rozbor_label_slovnikova_widget.setObjectName(u"rozbor_label_slovnikova_widget")
+        self.verticalLayout_45 = QVBoxLayout(self.rozbor_label_slovnikova_widget)
+        self.verticalLayout_45.setObjectName(u"verticalLayout_45")
+        self.rozbor_label_slovnikova_hodnota = QLabel(self.rozbor_label_slovnikova_widget)
+        self.rozbor_label_slovnikova_hodnota.setObjectName(u"rozbor_label_slovnikova_hodnota")
+
+        self.verticalLayout_45.addWidget(self.rozbor_label_slovnikova_hodnota)
+
 
         self.horizontalLayout_18.addWidget(self.rozbor_label_slovnikova_widget)
 
@@ -1226,7 +1272,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scroll_area_vypis_hesel = QWidget()
         self.scroll_area_vypis_hesel.setObjectName(u"scroll_area_vypis_hesel")
-        self.scroll_area_vypis_hesel.setGeometry(QRect(0, 0, 88, 718))
+        self.scroll_area_vypis_hesel.setGeometry(QRect(0, 0, 435, 718))
         self.verticalLayout_27 = QVBoxLayout(self.scroll_area_vypis_hesel)
         self.verticalLayout_27.setObjectName(u"verticalLayout_27")
         self.penezenka_widget = QWidget(self.scroll_area_vypis_hesel)
@@ -2059,17 +2105,24 @@ class Ui_MainWindow(object):
         self.label_12.setText(QCoreApplication.translate("MainWindow", u"Rozbor hesela:", None))
         self.rozbor_label_heslo.setText(QCoreApplication.translate("MainWindow", u"...", None))
         self.label_14.setText(QCoreApplication.translate("MainWindow", u"Celkov\u00e1 s\u00edla hesla", None))
+        self.rozbor_progressBar_sila.setFormat(QCoreApplication.translate("MainWindow", u"%p bit\u016f", None))
         self.rozbor_label_score.setText(QCoreApplication.translate("MainWindow", u"Score", None))
         self.rozbor_label_popisSily.setText(QCoreApplication.translate("MainWindow", u"Popis s\u00edly", None))
         self.label_17.setText(QCoreApplication.translate("MainWindow", u"Odhadovan\u00fd \u010das pot\u0159ebn\u00fd k prolomen\u00ed hesla", None))
         self.rozbor_label_cas.setText(QCoreApplication.translate("MainWindow", u"\u010cas", None))
         self.rozbor_label_popisCasu.setText(QCoreApplication.translate("MainWindow", u"popis", None))
         self.rozbor_label_delka.setText(QCoreApplication.translate("MainWindow", u"D\u00e9lka", None))
+        self.rozbor_progressBar_delka.setFormat(QCoreApplication.translate("MainWindow", u"%p znak\u016f", None))
         self.rozbor_label_mala.setText(QCoreApplication.translate("MainWindow", u"Mal\u00e1 p\u00edsmena", None))
+        self.rozbor_label_mala_hodnota.setText("")
         self.rozbor_label_velka.setText(QCoreApplication.translate("MainWindow", u"Velk\u00e1 p\u00edsmena", None))
+        self.rozbor_label_velka_hodnota.setText("")
         self.rozbor_label_cisla.setText(QCoreApplication.translate("MainWindow", u"\u010c\u00edsla", None))
+        self.rozbor_label_cisla_hodnota.setText("")
         self.rozbor_label_spec.setText(QCoreApplication.translate("MainWindow", u"Speci\u00e1ln\u00ed znaky", None))
+        self.rozbor_label_spec_hodnota.setText("")
         self.rozbor_label_slovnikova.setText(QCoreApplication.translate("MainWindow", u"Slovn\u00edkov\u00e1 slova", None))
+        self.rozbor_label_slovnikova_hodnota.setText("")
         self.rozbor_button_menu.setText(QCoreApplication.translate("MainWindow", u"<", None))
         self.label_5.setText(QCoreApplication.translate("MainWindow", u"Rozbor hesel", None))
         self.rozbor_button_rozebrat.setText(QCoreApplication.translate("MainWindow", u"Rozebrat", None))

@@ -144,15 +144,27 @@ border-radius:6px;
 }
 
 /* PROGRESS BAR*/
-QProgressBar{
+QProgressBar:horizontal{
 border: 2px solid  black;
 border-radius:8px;
 height:5px;
 text-align: center
 }
-QProgressBar::chunk{
+QProgressBar::chunk:horizontal{
 background-color:black;/* Mění barvu progress baru*/
 width:5px;
+}
+
+QProgressBar:vertical {
+    border: 2px solid black;
+    border-radius: 8px;
+    width: 5px;
+    text-align: center;
+}
+
+QProgressBar::chunk:vertical {
+    background-color: black; /* Mění barvu progress baru */
+    height: 5px;
 }</string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -886,7 +898,7 @@ background-color:#3a3a39;
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>0</y>
+                <y>-264</y>
                 <width>384</width>
                 <height>830</height>
                </rect>
@@ -1007,7 +1019,10 @@ background-color:#3a3a39;
                      <item>
                       <widget class="QProgressBar" name="rozbor_progressBar_sila">
                        <property name="value">
-                        <number>24</number>
+                        <number>0</number>
+                       </property>
+                       <property name="format">
+                        <string>%p bitů</string>
                        </property>
                       </widget>
                      </item>
@@ -1097,26 +1112,39 @@ background-color:#3a3a39;
                      </property>
                      <item>
                       <widget class="QWidget" name="widget_16" native="true">
-                       <layout class="QHBoxLayout" name="horizontalLayout_8">
+                       <layout class="QVBoxLayout" name="verticalLayout_44">
                         <property name="spacing">
-                         <number>0</number>
+                         <number>10</number>
                         </property>
                         <property name="leftMargin">
-                         <number>0</number>
+                         <number>5</number>
                         </property>
                         <property name="topMargin">
-                         <number>0</number>
+                         <number>5</number>
                         </property>
                         <property name="rightMargin">
-                         <number>0</number>
+                         <number>5</number>
                         </property>
                         <property name="bottomMargin">
-                         <number>0</number>
+                         <number>5</number>
                         </property>
-                        <item>
+                        <item alignment="Qt::AlignmentFlag::AlignHCenter">
                          <widget class="QLabel" name="rozbor_label_delka">
                           <property name="text">
                            <string>Délka</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QProgressBar" name="rozbor_progressBar_delka">
+                          <property name="value">
+                           <number>0</number>
+                          </property>
+                          <property name="orientation">
+                           <enum>Qt::Orientation::Horizontal</enum>
+                          </property>
+                          <property name="format">
+                           <string>%p znaků</string>
                           </property>
                          </widget>
                         </item>
@@ -1148,6 +1176,13 @@ background-color:#3a3a39;
                           </property>
                          </widget>
                         </item>
+                        <item>
+                         <widget class="QLabel" name="rozbor_label_mala_hodnota">
+                          <property name="text">
+                           <string/>
+                          </property>
+                         </widget>
+                        </item>
                        </layout>
                       </widget>
                      </item>
@@ -1173,6 +1208,13 @@ background-color:#3a3a39;
                          <widget class="QLabel" name="rozbor_label_velka">
                           <property name="text">
                            <string>Velká písmena</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="rozbor_label_velka_hodnota">
+                          <property name="text">
+                           <string/>
                           </property>
                          </widget>
                         </item>
@@ -1204,6 +1246,13 @@ background-color:#3a3a39;
                           </property>
                          </widget>
                         </item>
+                        <item>
+                         <widget class="QLabel" name="rozbor_label_cisla_hodnota">
+                          <property name="text">
+                           <string/>
+                          </property>
+                         </widget>
+                        </item>
                        </layout>
                       </widget>
                      </item>
@@ -1229,6 +1278,13 @@ background-color:#3a3a39;
                          <widget class="QLabel" name="rozbor_label_spec">
                           <property name="text">
                            <string>Speciální znaky</string>
+                          </property>
+                         </widget>
+                        </item>
+                        <item>
+                         <widget class="QLabel" name="rozbor_label_spec_hodnota">
+                          <property name="text">
+                           <string/>
                           </property>
                          </widget>
                         </item>
@@ -1267,7 +1323,17 @@ background-color:#3a3a39;
                          </widget>
                         </item>
                         <item>
-                         <widget class="QWidget" name="rozbor_label_slovnikova_widget" native="true"/>
+                         <widget class="QWidget" name="rozbor_label_slovnikova_widget" native="true">
+                          <layout class="QVBoxLayout" name="verticalLayout_45">
+                           <item>
+                            <widget class="QLabel" name="rozbor_label_slovnikova_hodnota">
+                             <property name="text">
+                              <string/>
+                             </property>
+                            </widget>
+                           </item>
+                          </layout>
+                         </widget>
                         </item>
                        </layout>
                       </widget>
@@ -2056,7 +2122,7 @@ color:black	;
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>88</width>
+                   <width>435</width>
                    <height>718</height>
                   </rect>
                  </property>

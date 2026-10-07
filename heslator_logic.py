@@ -66,7 +66,7 @@ def decrypt(encrypted_data: bytes, password: str) -> bytes:  # dešifrování
 
     aes = AESGCM(key)
 
-    return aes.decrypt(nonce, data, None)
+    return aes.decrypt(nonce, data, None), key
 
 
 # načtení dat
@@ -80,13 +80,13 @@ def load_data(heslo, user_dir_path):
             data_bytes = f.read()
 
             print(f"náhodná mrdka v user1.dat: {data_bytes}")
-            desifrovana_bytes = decrypt(data_bytes, heslo)
+            desifrovana_bytes, key = decrypt(data_bytes, heslo)
             json_string = desifrovana_bytes.decode("utf-8")
             data = json.loads(json_string)
-            return data, True
+            return data, True, key
     except Exception as e:
         print(f"nelze: {e}")
-        return None, False
+        return None, False, None
 
 
 # Uložení dat
@@ -140,7 +140,8 @@ class Login:
             else:
 
                 user_dir_path = os.path.join(dir_path, "users", f"{self.jmeno}.dat")
-                self.data, self.prihlasen = load_data(self.heslo, user_dir_path)
+                self.data, self.prihlasen, key = load_data(self.heslo, user_dir_path)
+                self.Prihlaseno = Přihlášeno(key)
                 if self.prihlasen:
 
                     self.poznamka = "úspěšně přihlášen"
@@ -152,6 +153,12 @@ class Login:
             self.poznamka = "problém s přihlášením"
 
         return (self.poznamka, self.prihlasen)
+
+
+class Přihlášeno:
+    def __init__(self, key):
+        self.key = key
+        # vyjebaná funkce na ukládání klíče, ještě upravit co příjímá load a save a jsem šťastný
 
 
 class New_account:
@@ -198,15 +205,15 @@ class Rozbor:
         # self.cislo2 = " "
         # self.spec2 = " "
         # self.delka2 = " "
-        self.score = 0  # nove
+
         self.minuly_znak = ""
         self.minuly_znak_presne = ""
         self.pocet_minuly_presne = 0
         self.pocet_minuly = 0
-        self.score2 = ""
+        self.heslo_error = ""
         self.heslo2 = "Heslo: " + self.heslo
         self.poznamka = ""
-        self.score_class = 0
+
         self.raw_bits = 0.0
         self.final_bits = 0.0
         self.barva_sily = ""
@@ -217,17 +224,19 @@ class Rozbor:
         self.penalized_bits = 0.0
         self.penalized_coeficient = 1.0
         self.nalezena_slova = []
+        self.pocet_nalezenych = 0
         self.slova = False
 
         if self.delka > 0:
             self.kontrola()
         else:
-            self.score2 = "Heslo je prázdné"
+            self.heslo_error = "Heslo je prázdné"
             print("heslo je prázdné!")
             pass
 
     def kontrola(self):
         # běh funkce kontrola
+        self.reset_promennych(self.heslo)
         self.rozbor_pismen()
         self.potencialni_znaky()
         self.obsah_slovnikoveho_slova()
@@ -237,9 +246,52 @@ class Rozbor:
         return {
             "final_bits": self.final_bits,
             "barva_sily": self.barva_sily,
+            "nalezena_slova": self.nalezena_slova,
+            "pocet_nalezenych": self.pocet_nalezenych,
+            "mala": self.mala,
+            "velka": self.velka,
+            "spec": self.spec,
+            "cisla": self.cislo,
         }
-        # for i in self.znaky:
-        #     print(f"{i} je {self.znaky[i]}krát")
+
+    def reset_promennych(self, heslo):
+        # kvůli workerovi volám dvakrát classu a tím pádem se výsledky zdovjnásobí,
+        # proto je na začátku vždy resetnu
+
+        self.heslo = heslo.strip()
+
+        self.delka = len(self.heslo)
+
+        self.heslo_error = ""
+        self.heslo2 = "Heslo: " + self.heslo
+        self.poznamka = ""
+
+        # síla hesla
+
+        self.raw_bits = 0.0
+        self.final_bits = 0.0
+        self.barva_sily = ""
+
+        # rozbor hesla - znaky
+        self.pot_zn = 0
+        self.znaky = {}
+        self.mala = 0
+        self.velka = 0
+        self.cislo = 0
+        self.spec = 0
+
+        self.minuly_znak = ""
+        self.minuly_znak_presne = ""
+        self.pocet_minuly_presne = 0
+        self.pocet_minuly = 0
+
+        # slovnikový rozbor
+
+        self.penalized_bits = 0.0
+        self.penalized_coeficient = 1.0
+        self.nalezena_slova = []
+        self.pocet_nalezenych = 0
+        self.slova = False
 
     def potencialni_znaky(self):
         if self.mala > 0:
@@ -255,7 +307,9 @@ class Rozbor:
         print(f"Entropie hesla je: {self.raw_bits}")
 
     def obsah_slovnikoveho_slova(self):
-
+        self.nalezena_slova = []
+        self.penalized_bits = 0
+        self.pocet_nalezenych = 0
         with open(large_slovnik, "r", encoding="utf-8") as f:
             slovnik = f.read().splitlines()
 
@@ -283,7 +337,8 @@ class Rozbor:
                     heslo_lower = heslo_lower.replace(slovo_lower, "", 1)
                     nalezeno = True
                     self.penalized_bits += entropie_slova
-
+                    self.pocet_nalezenych += 1
+                    break
                     # print(f"Slovo: {slovo}  a heslo {heslo_lower}")  # smazat
                     # print(f"index slova: {idx}")  # smazat
                     # print(f"Entropie: {entropie_slova}")  # smazat
@@ -437,6 +492,11 @@ class Rozbor:
             self.barva_sily = "red"
 
 
+class Rozbor_uložení:
+    def __init__(self, nove_ulozeni):
+        self.nove_ulozeni = nove_ulozeni
+
+
 class Generator:
     def __init__(self):
         pass
@@ -452,7 +512,7 @@ class Nastaveni:
         pass
 
 
-class Worker(QThread):
+class Worker_Rozbor(QThread):
     finished = Signal(dict)
 
     def __init__(self, metoda, heslo):
@@ -465,10 +525,10 @@ class Worker(QThread):
     def run(self):
         try:
             print("posílám do rozboru")
-            # rozebrano = self.metoda(self.heslo)
-            # self.finished.emit(rozebrano)
+
             rozebrano = Rozbor(self.heslo)
             vysledek = rozebrano.kontrola()
+            Rozbor_uložení(vysledek)
             self.finished.emit(vysledek)
         except:
             print("problem")
