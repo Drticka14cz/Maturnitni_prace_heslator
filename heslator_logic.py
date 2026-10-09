@@ -78,7 +78,7 @@ def load_data(heslo, user_dir_path):
         with open(user_dir_path, "rb") as f:
             data_bytes = f.read()
 
-            print(f"náhodná mrdka v user1.dat: {data_bytes}")
+            print(f"náhodná xxxx v user1.dat: {data_bytes}")
             desifrovana_bytes = decrypt(data_bytes, heslo)
             json_string = desifrovana_bytes.decode("utf-8")
             data = json.loads(json_string)
