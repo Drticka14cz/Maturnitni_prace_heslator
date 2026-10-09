@@ -20,8 +20,8 @@ large_slovnik = os.path.join(work_dir, "Pwdb_top-10000000.txt")
 def derive_key(password: str, salt: bytes) -> bytes:
     password  # .encode() zjistit proč encode - encode se dává pokud chcem dát string na nějkou věc - utf-8 ascii atd. proč? idk
     kdf = PBKDF2HMAC(
-        algorithm=hashes.SHA256(), length=32, salt=salt, iterations=1_200_000
-    )
+        algorithm=hashes.SHA256(), length=32, salt=salt, iterations=1_200_000 # Generuju hash klíč. Tento hash klíč pak používáme jako klíč pro symetrické šifrování díky AES(Advanced encryption standard)
+    )  
 
     key = kdf.derive(password.encode())
     print(f"{key.hex()} je klic")
@@ -126,7 +126,7 @@ class Login:
     def __init__(self, jmeno, heslo):
         self.jmeno = jmeno
         self.heslo = heslo
-
+        
         self.data = None
         self.prihlasen = False
         self.poznamka = ""
@@ -137,6 +137,7 @@ class Login:
             if self.jmeno == "guest" and self.heslo == "guest":
                 self.prihlasen = True
                 self.poznamka = "úspěšně přihlášen"
+                self.Prihlaseno = None
             else:
 
                 user_dir_path = os.path.join(dir_path, "users", f"{self.jmeno}.dat")
@@ -252,6 +253,7 @@ class Rozbor:
             "velka": self.velka,
             "spec": self.spec,
             "cisla": self.cislo,
+            "delka": self.delka,
         }
 
     def reset_promennych(self, heslo):

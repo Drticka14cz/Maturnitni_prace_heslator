@@ -148,7 +148,8 @@ class Heslator(QMainWindow):
 
         self.default_progress_bar()  # reset barvy
         heslo = self.ui.rozbor_input.text().strip()  # input hesla
-        self.ui.rozbor_progressBar_sila.setRange(0, 0)  # loading animace progress baru
+        self.ui.rozbor_progressBar_sila.setRange(0, 0)
+        self.ui.rozbor_progressBar_delka.setRange(0, 0)  # loading animace progress baru
         self.worker_rozbor = Worker_Rozbor(Rozbor, heslo)  # worker pro výpočet(rozbpr)
         self.worker_rozbor.finished.connect(self.rozbor_dokoncen)
         # self.worker.error.connect(self.rozbor_chyba)
@@ -183,6 +184,25 @@ width:5px;
 
 """)
         # počty znaků (malá, velká, čísla a znaky)
+
+        self.ui.rozbor_progressBar_delka.setRange(
+                    0, 40
+                )
+        self.ui.rozbor_progressBar_delka.setValue(data["delka"])
+        self.ui.rozbor_progressBar_delka.setFormat("%v")
+        self.ui.rozbor_progressBar_delka.setStyleSheet(f"""
+        /* PROGRESS BAR*/
+        QProgressBar{{
+        border: 2px solid  black;
+        border-radius:8px;
+        height:5px;
+        text-align: center
+        }}
+        QProgressBar::chunk{{
+        background-color:{data["barva_sily"]};/* Mění barvu progress baru*/
+        width:5px;
+        }}""")
+
         if data["mala"] > 0:
             self.ui.rozbor_label_mala_hodnota.setText(str(data["mala"]) + "  🟢")
         else:
@@ -194,7 +214,7 @@ width:5px;
         if data["spec"] > 0:
             self.ui.rozbor_label_spec_hodnota.setText(str(data["spec"]) + "  🟢")
         else:
-            self.ui.rozbor_label_spec_hodnota.setText(str(data["velka"]) + "  🔴")
+            self.ui.rozbor_label_spec_hodnota.setText(str(data["spec"]) + "  🔴")
         if data["cisla"] > 0:
             self.ui.rozbor_label_cisla_hodnota.setText(str(data["cisla"]) + "  🟢")
         else:
