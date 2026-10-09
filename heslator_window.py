@@ -109,6 +109,8 @@ class Heslator(QMainWindow):
             lg = Login(jmeno, heslo)
             poznamka = lg.poznamka
             prihlasen = lg.prihlasen
+            self.Přihlášeno = lg.Prihlaseno
+
             if prihlasen:
                 self.ui.stackedWidget.setCurrentIndex(1)
             else:
@@ -140,23 +142,95 @@ class Heslator(QMainWindow):
         # ------2 ROZBOR------
 
     def rozbor(self):
-        heslo = self.ui.rozbor_input.text().strip()
-        self.ui.rozbor_progressBar_sila.setRange(0, 0)
-        hodnoty = Rozbor(heslo)
+        # Funkce která se sputsí hned po kliku na button
 
+        # spustí na pozadí výpočet, zároveň loading animace.
+
+        self.default_progress_bar()  # reset barvy
+        heslo = self.ui.rozbor_input.text().strip()  # input hesla
+        self.ui.rozbor_progressBar_sila.setRange(0, 0)  # loading animace progress baru
+        self.worker_rozbor = Worker_Rozbor(Rozbor, heslo)  # worker pro výpočet(rozbpr)
+        self.worker_rozbor.finished.connect(self.rozbor_dokoncen)
+        # self.worker.error.connect(self.rozbor_chyba)
+        self.worker_rozbor.finished.connect(self.worker_rozbor.deleteLater)
         self.ui.rozbor_label_heslo.setText(heslo)
-        self.ui.rozbor_label_score.setText(str(hodnoty.final_bits))
+        self.worker_rozbor.start()
+
+    def rozbor_dokoncen(self, data):
+        # výpis  hodnot po dokončení výpočtu
+
+        # síla a progress bar
+        self.ui.rozbor_label_score.setText(str(data["final_bits"]))
         self.ui.rozbor_progressBar_sila.setRange(
             0, 150
         )  # nastaví minimální a maximální hodnotu pro progressbar
 
-        self.ui.rozbor_progressBar_sila.setValue(hodnoty.final_bits)
-        # self.ui.rozbor_button_rozebrat.clicked.connect(
-        #     lambda: Rozbor(
-        #         self.ui.rozbor_input.text().strip(), print("Posílám rozebrat")
-        #     )  # LAMBDA - vnořená funkce - volá rovnou rozbor a posílá heslo z inputu
-        # )
+        self.ui.rozbor_progressBar_sila.setValue(data["final_bits"])
+        self.ui.rozbor_progressBar_sila.setFormat("%v")
+        self.ui.rozbor_progressBar_sila.setStyleSheet(f"""
+        /* PROGRESS BAR*/
+QProgressBar{{
+border: 2px solid  black;
+border-radius:8px;
+height:5px;
+text-align: center
+}}
+QProgressBar::chunk{{
+background-color:{data["barva_sily"]};/* Mění barvu progress baru*/
+width:5px;
+}}
 
+
+""")
+        # počty znaků (malá, velká, čísla a znaky)
+        if data["mala"] > 0:
+            self.ui.rozbor_label_mala_hodnota.setText(str(data["mala"]) + "  🟢")
+        else:
+            self.ui.rozbor_label_mala_hodnota.setText(str(data["mala"]) + "  🔴")
+        if data["velka"] > 0:
+            self.ui.rozbor_label_velka_hodnota.setText(str(data["velka"]) + "  🟢")
+        else:
+            self.ui.rozbor_label_velka_hodnota.setText(str(data["velka"]) + "  🔴")
+        if data["spec"] > 0:
+            self.ui.rozbor_label_spec_hodnota.setText(str(data["spec"]) + "  🟢")
+        else:
+            self.ui.rozbor_label_spec_hodnota.setText(str(data["velka"]) + "  🔴")
+        if data["cisla"] > 0:
+            self.ui.rozbor_label_cisla_hodnota.setText(str(data["cisla"]) + "  🟢")
+        else:
+            self.ui.rozbor_label_cisla_hodnota.setText(str(data["cisla"]) + "  🔴")
+        # slovníková slova
+        nalezena_slova = ""
+        # print("nacházím slova: \n \n \n")
+        # print(str(data["nalezena_slova"]["slovo"]))
+        for i in data["nalezena_slova"]:
+            # print(i["slovo"])
+            if nalezena_slova == "":
+                nalezena_slova = i["slovo"]
+            else:
+                nalezena_slova = nalezena_slova + ", " + i["slovo"]
+
+        self.ui.rozbor_label_slovnikova_hodnota.setText(nalezena_slova)
+
+    def default_progress_bar(self):
+        self.ui.rozbor_progressBar_sila.setStyleSheet(f"""
+                /* PROGRESS BAR*/
+        QProgressBar{{
+        border: 2px solid  black;
+        border-radius:8px;
+        height:5px;
+        text-align: center
+        }}
+        QProgressBar::chunk{{
+        background-color:black;/* Mění barvu progress baru*/
+        width:5px;
+        }}
+        
+        
+        """)
+
+    def rozbor_chyba(self):
+        print("chyba v rozboru")
         # ------3 PENĚŽENKA------
 
         # ------4 GENERÁTOR ------
