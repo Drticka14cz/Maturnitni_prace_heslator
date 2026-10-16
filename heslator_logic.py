@@ -143,6 +143,7 @@ class Login:
                 user_dir_path = os.path.join(dir_path, "users", f"{self.jmeno}.dat")
                 self.data, self.prihlasen, key = load_data(self.heslo, user_dir_path)
                 self.Prihlaseno = Přihlášeno(key)
+                print(f"v logic key{self.Prihlaseno.key}")#Lze dát .hex()díky žemu se to zobrazí líp
                 if self.prihlasen:
 
                     self.poznamka = "úspěšně přihlášen"

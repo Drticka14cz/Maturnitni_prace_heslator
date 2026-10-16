@@ -110,6 +110,7 @@ class Heslator(QMainWindow):
             poznamka = lg.poznamka
             prihlasen = lg.prihlasen
             self.Přihlášeno = lg.Prihlaseno
+            print(f"self.přihlášeno: {self.Přihlášeno.key}")
 
             if prihlasen:
                 self.ui.stackedWidget.setCurrentIndex(1)
