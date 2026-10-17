@@ -151,7 +151,9 @@ class Heslator(QMainWindow):
         heslo = self.ui.rozbor_input.text().strip()  # input hesla
         self.ui.rozbor_progressBar_sila.setRange(0, 0)
         self.ui.rozbor_progressBar_delka.setRange(0, 0)  # loading animace progress baru
-        self.worker_rozbor = Worker_Rozbor(Rozbor, heslo)  # worker pro výpočet(rozbpr)
+        self.worker_rozbor = Worker_Rozbor(
+            Rozbor, heslo, self.Přihlášeno
+        )  # worker pro výpočet(rozbpr)
         self.worker_rozbor.finished.connect(self.rozbor_dokoncen)
         # self.worker.error.connect(self.rozbor_chyba)
         self.worker_rozbor.finished.connect(self.worker_rozbor.deleteLater)
@@ -186,9 +188,7 @@ width:5px;
 """)
         # počty znaků (malá, velká, čísla a znaky)
 
-        self.ui.rozbor_progressBar_delka.setRange(
-                    0, 40
-                )
+        self.ui.rozbor_progressBar_delka.setRange(0, 40)
         self.ui.rozbor_progressBar_delka.setValue(data["delka"])
         self.ui.rozbor_progressBar_delka.setFormat("%v")
         self.ui.rozbor_progressBar_delka.setStyleSheet(f"""

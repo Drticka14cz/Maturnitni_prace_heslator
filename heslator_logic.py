@@ -20,8 +20,11 @@ large_slovnik = os.path.join(work_dir, "Pwdb_top-10000000.txt")
 def derive_key(password: str, salt: bytes) -> bytes:
     password  # .encode() zjistit proč encode - encode se dává pokud chcem dát string na nějkou věc - utf-8 ascii atd. proč? idk
     kdf = PBKDF2HMAC(
-        algorithm=hashes.SHA256(), length=32, salt=salt, iterations=1_200_000 # Generuju hash klíč. Tento hash klíč pak používáme jako klíč pro symetrické šifrování díky AES(Advanced encryption standard)
-    )  
+        algorithm=hashes.SHA256(),
+        length=32,
+        salt=salt,
+        iterations=1_200_000,  # Generuju hash klíč. Tento hash klíč pak používáme jako klíč pro symetrické šifrování díky AES(Advanced encryption standard)
+    )
 
     key = kdf.derive(password.encode())
     print(f"{key.hex()} je klic")
@@ -29,15 +32,16 @@ def derive_key(password: str, salt: bytes) -> bytes:
 
 
 # Š I F R O V Á N Í
-def encrypt(data: bytes, password: str):  # šifrování
+def encrypt(data: bytes, password, key):  # šifrování
     print("Sifruji")
 
     salt = os.urandom(16)  # generuju salt, 16 bitů
-
-    key = derive_key(
-        password, salt
-    )  # generuju klíč přes volání funkce, zadávám heslo a salt(může být veřejný)
-
+    if key == None:
+        key = derive_key(
+            password, salt
+        )  # generuju klíč přes volání funkce, zadávám heslo a salt(může být veřejný)
+    else:
+        key = key
     nonce = os.urandom(
         12
     )  # generuji nonce - číslo co je jen jednou použito při šifrování
@@ -53,7 +57,7 @@ def encrypt(data: bytes, password: str):  # šifrování
 
 
 # D E Š I F R O V Á N Í
-def decrypt(encrypted_data: bytes, password: str) -> bytes:  # dešifrování
+def decrypt(encrypted_data: bytes, password, key) -> bytes:  # dešifrování
     print("desifruji")
     salt = encrypted_data[0:16]
     print(f"SALT: {salt}")
@@ -61,8 +65,10 @@ def decrypt(encrypted_data: bytes, password: str) -> bytes:  # dešifrování
     print(f"NONCE: {nonce}")
     data = encrypted_data[28:]
     print(f"DATAAA: {data}")
-
-    key = derive_key(password, salt)
+    if key == None:
+        key = derive_key(password, salt)
+    else:
+        key = key
 
     aes = AESGCM(key)
 
@@ -70,7 +76,7 @@ def decrypt(encrypted_data: bytes, password: str) -> bytes:  # dešifrování
 
 
 # načtení dat
-def load_data(heslo, user_dir_path):
+def load_data(heslo, user_dir_path, key):
     if not os.path.exists(user_dir_path):
         return None, False
     if os.path.getsize(user_dir_path) == 0:
@@ -80,7 +86,7 @@ def load_data(heslo, user_dir_path):
             data_bytes = f.read()
 
             print(f"náhodná mrdka v user1.dat: {data_bytes}")
-            desifrovana_bytes, key = decrypt(data_bytes, heslo)
+            desifrovana_bytes, key = decrypt(data_bytes, heslo, key)
             json_string = desifrovana_bytes.decode("utf-8")
             data = json.loads(json_string)
             return data, True, key
@@ -90,15 +96,11 @@ def load_data(heslo, user_dir_path):
 
 
 # Uložení dat
-def save_data(
-    heslo: str,
-    user_dir_path: str,
-    data: dict,
-):
+def save_data(heslo, user_dir_path: str, data: dict, key):
     try:
         json_bytes = json.dumps(data, ensure_ascii=False).encode("utf-8")
 
-        zasifrovano = encrypt(json_bytes, heslo)
+        zasifrovano = encrypt(json_bytes, heslo, key)
         with open(user_dir_path, "wb") as f:
             f.write(zasifrovano)
             return True
@@ -118,7 +120,7 @@ def new_data(heslo, user_dir_path):
             "Dark_mode": True,
         },
     }
-    save_data(heslo, user_dir_path, data)
+    save_data(heslo, user_dir_path, data, None)
     return data, True
 
 
@@ -126,7 +128,7 @@ class Login:
     def __init__(self, jmeno, heslo):
         self.jmeno = jmeno
         self.heslo = heslo
-        
+
         self.data = None
         self.prihlasen = False
         self.poznamka = ""
@@ -141,9 +143,13 @@ class Login:
             else:
 
                 user_dir_path = os.path.join(dir_path, "users", f"{self.jmeno}.dat")
-                self.data, self.prihlasen, key = load_data(self.heslo, user_dir_path)
-                self.Prihlaseno = Přihlášeno(key)
-                print(f"v logic key{self.Prihlaseno.key}")#Lze dát .hex()díky žemu se to zobrazí líp
+                self.data, self.prihlasen, key = load_data(
+                    self.heslo, user_dir_path, None
+                )
+                self.Prihlaseno = Přihlášeno(key, user_dir_path)
+                print(
+                    f"v logic key{self.Prihlaseno.key}"
+                )  # Lze dát .hex()díky žemu se to zobrazí líp
                 if self.prihlasen:
 
                     self.poznamka = "úspěšně přihlášen"
@@ -158,8 +164,9 @@ class Login:
 
 
 class Přihlášeno:
-    def __init__(self, key):
+    def __init__(self, key, user_dir_path):
         self.key = key
+        self.user_dir_path = user_dir_path
         # vyjebaná funkce na ukládání klíče, ještě upravit co příjímá load a save a jsem šťastný
 
 
@@ -193,8 +200,13 @@ class New_account:
 
 
 class Rozbor:
-    def __init__(self, heslo):
+    def __init__(self, heslo, prihlaseno):
         print(f"Přijímám rozbor - {heslo}")
+
+        self.prihlaseno = (
+            prihlaseno  # funkce díky které máme key atd pro volání loadu a savu
+        )
+
         self.heslo = heslo.strip()
         self.mala = 0
         self.velka = 0
@@ -245,6 +257,16 @@ class Rozbor:
         self.entropie_znaku()
         self.penalizace()
         self.vyhodnoceni()
+        data, uspech, klic = load_data(
+            None, self.prihlaseno.user_dir_path, self.prihlaseno.key
+        )
+        print(f"Loadím data v rozboru: {data}")
+        data["historie_rozbor"].append(
+            {"heslo": self.heslo, "final_bits": self.final_bits}
+        )
+        print("posílám data na save")
+        save_data(None, self.prihlaseno.user_dir_path, data, self.prihlaseno.key)
+        print("po savu")
         return {
             "final_bits": self.final_bits,
             "barva_sily": self.barva_sily,
@@ -518,20 +540,22 @@ class Nastaveni:
 class Worker_Rozbor(QThread):
     finished = Signal(dict)
 
-    def __init__(self, metoda, heslo):
+    def __init__(self, metoda, heslo, Přihlášeno):
 
         super().__init__()
         self.metoda = metoda
         self.heslo = heslo
+        self.prihlaseno = Přihlášeno
         print("Init workera")
 
     def run(self):
         try:
             print("posílám do rozboru")
 
-            rozebrano = Rozbor(self.heslo)
+            rozebrano = Rozbor(self.heslo, self.prihlaseno)
             vysledek = rozebrano.kontrola()
-            Rozbor_uložení(vysledek)
+            print("mame vysledek v workeru")
+            # Rozbor_uložení(vysledek)
             self.finished.emit(vysledek)
-        except:
-            print("problem")
+        except Exception as e:
+            print(f"problem {e}")
