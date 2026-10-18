@@ -180,10 +180,10 @@ class Ui_MainWindow(object):
         self.centralwidget = QWidget(MainWindow)
         self.centralwidget.setObjectName(u"centralwidget")
         self.centralwidget.setStyleSheet(u"")
-        self.gridLayout_10 = QGridLayout(self.centralwidget)
-        self.gridLayout_10.setSpacing(0)
-        self.gridLayout_10.setObjectName(u"gridLayout_10")
-        self.gridLayout_10.setContentsMargins(0, 0, 0, 0)
+        self.verticalLayout_46 = QVBoxLayout(self.centralwidget)
+        self.verticalLayout_46.setSpacing(0)
+        self.verticalLayout_46.setObjectName(u"verticalLayout_46")
+        self.verticalLayout_46.setContentsMargins(0, 0, 0, 0)
         self.stackedWidget = QStackedWidget(self.centralwidget)
         self.stackedWidget.setObjectName(u"stackedWidget")
         sizePolicy = QSizePolicy(QSizePolicy.Policy.Expanding, QSizePolicy.Policy.Expanding)
@@ -597,7 +597,7 @@ class Ui_MainWindow(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents_4 = QWidget()
         self.scrollAreaWidgetContents_4.setObjectName(u"scrollAreaWidgetContents_4")
-        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, -264, 384, 830))
+        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, -285, 384, 830))
         self.scrollAreaWidgetContents_4.setStyleSheet(u"#scrollAreaWidgetContents_4 >QWidget{\n"
 " background-color: #05C1FF;\n"
 "    border-radius: 16px;\n"
@@ -1012,10 +1012,15 @@ class Ui_MainWindow(object):
         self.gridLayout_14.setContentsMargins(0, 0, 0, 0)
         self.rozbor_historie_scrollArea = QScrollArea(self.widget_23)
         self.rozbor_historie_scrollArea.setObjectName(u"rozbor_historie_scrollArea")
+        self.rozbor_historie_scrollArea.setVerticalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOn)
         self.rozbor_historie_scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 256, 205))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 244, 205))
+        self.scrollAreaWidgetContents.setStyleSheet(u"scrollAreaWidgetContents >QWidget{\n"
+"background-color:black;\n"
+"color:red;\n"
+"}")
         self.rozbor_historie_scrollArea.setWidget(self.scrollAreaWidgetContents)
 
         self.gridLayout_14.addWidget(self.rozbor_historie_scrollArea, 0, 0, 1, 1)
@@ -1272,7 +1277,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scroll_area_vypis_hesel = QWidget()
         self.scroll_area_vypis_hesel.setObjectName(u"scroll_area_vypis_hesel")
-        self.scroll_area_vypis_hesel.setGeometry(QRect(0, 0, 435, 718))
+        self.scroll_area_vypis_hesel.setGeometry(QRect(0, 0, 88, 718))
         self.verticalLayout_27 = QVBoxLayout(self.scroll_area_vypis_hesel)
         self.verticalLayout_27.setObjectName(u"verticalLayout_27")
         self.penezenka_widget = QWidget(self.scroll_area_vypis_hesel)
@@ -2066,7 +2071,7 @@ class Ui_MainWindow(object):
 
         self.stackedWidget.addWidget(self.zalozeni)
 
-        self.gridLayout_10.addWidget(self.stackedWidget, 0, 0, 1, 1)
+        self.verticalLayout_46.addWidget(self.stackedWidget)
 
         MainWindow.setCentralWidget(self.centralwidget)
         self.statusbar = QStatusBar(MainWindow)

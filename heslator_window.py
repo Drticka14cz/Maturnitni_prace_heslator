@@ -6,6 +6,7 @@ import zdroje_rc
 import os
 from heslator_logic import *
 from heslator_ui import Ui_MainWindow
+import pyperclip
 
 
 class Heslator(QMainWindow):
@@ -77,6 +78,7 @@ class Heslator(QMainWindow):
         self.ui.stackedWidget.setCurrentIndex(2)
         self.ui.rozbor_button_menu.clicked.connect(self.do_menu)
         print("rozbor")
+        self.rozbor_zobrazit_historii()
 
     def do_info(self):
         self.ui.stackedWidget.setCurrentIndex(5)
@@ -144,32 +146,8 @@ class Heslator(QMainWindow):
 
     def rozbor(self):
         # Funkce která se sputsí hned po kliku na button
-
+        self.rozbor_zobrazit_historii()
         # Loadnutí již kontrolovaných dat
-
-        ######
-        data, uspech, klic, salt = load_data(
-            self.Přihlášeno.user_dir_path,
-            key=self.Přihlášeno.key,
-            salt=self.Přihlášeno.salt,
-        )
-        historie_rozbor_widget = self.ui.scrollAreaWidgetContents
-        historie_rozbor_widget_laout = QVBoxLayout(historie_rozbor_widget)
-        for i in data["historie_rozbor"]:
-            print(f"i = {i}")
-
-            radek_kontrola = QWidget()
-            layout = QHBoxLayout(radek_kontrola)
-
-            zobrazene_heslo = QLabel(i["heslo"])
-            zobrazena_sila = QLabel(str(i["final_bits"]))
-            zobrazeny_cas = QLabel(i["cas"])
-            layout.addWidget(zobrazene_heslo)
-            layout.addWidget(zobrazena_sila)
-            layout.addWidget(zobrazeny_cas)
-
-            historie_rozbor_widget_laout.addWidget(radek_kontrola)
-        ######
 
         # spustí na pozadí výpočet, zároveň loading animace.
 
@@ -185,6 +163,79 @@ class Heslator(QMainWindow):
         self.worker_rozbor.finished.connect(self.worker_rozbor.deleteLater)
         self.ui.rozbor_label_heslo.setText(heslo)
         self.worker_rozbor.start()
+
+    def rozbor_zobrazit_historii(self):
+        ######
+        data, uspech, klic, salt = load_data(
+            self.Přihlášeno.user_dir_path,
+            key=self.Přihlášeno.key,
+            salt=self.Přihlášeno.salt,
+        )
+        historie_rozbor_widget = self.ui.scrollAreaWidgetContents
+        historie_rozbor_widget_laout = QVBoxLayout(historie_rozbor_widget)
+        index = -1
+        for i in data["historie_rozbor"]:
+            index += 1
+            print(f"i = {i}")
+
+            radek_kontrola = QFrame()
+            layout = QHBoxLayout(radek_kontrola)
+
+            radek_kontrola.setStyleSheet("""
+            QFrame {
+            background-color: #494948;
+            border: 1px solid  #3a3a39;
+            border-radius: 8px;
+            margin:2px;
+            margin-bottom: 5px;
+        }
+        QLabel{
+        font-size:10px;
+        color:#ffffff;
+        border: 0px solid black
+        }
+    """)
+
+            zobrazene_heslo = QLabel(i["heslo"])
+            zobrazena_sila = QLabel(str(i["final_bits"]))
+            zobrazeny_cas = QLabel(i["cas"])
+            kopirovat = QPushButton("Kopírovat")
+            kopirovat.clicked.connect(
+                lambda checked=False, heslo=i[
+                    "heslo"
+                ], w=radek_kontrola: self.kopirovat_radek_historie(heslo)
+            )
+            smazat = QPushButton("Smazat")
+            smazat.clicked.connect(
+                lambda checked=False, idx=index, w=radek_kontrola: self.smazat_radek_historie(
+                    w, idx, data
+                )
+            )
+            layout.addWidget(zobrazene_heslo)
+            layout.addWidget(zobrazena_sila)
+            layout.addWidget(zobrazeny_cas)
+            layout.addWidget(kopirovat)
+            layout.addWidget(smazat)
+
+            historie_rozbor_widget_laout.addWidget(radek_kontrola)
+
+    ######
+    def smazat_radek_historie(self, w, index, data):
+
+        w.deleteLater()
+
+        data["historie_rozbor"].pop(index)
+        save_data(
+            heslo=None,
+            user_dir_path=self.Přihlášeno.user_dir_path,
+            data=data,
+            key=self.Přihlášeno.key,
+            salt=self.Přihlášeno.salt,
+        )
+        self.rozbor_zobrazit_historii()
+
+    def kopirovat_radek_historie(self, heslo):
+        QApplication.clipboard().setText(heslo)
 
     def rozbor_dokoncen(self, data):
         # výpis  hodnot po dokončení výpočtu

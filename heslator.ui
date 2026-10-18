@@ -171,7 +171,10 @@ QProgressBar::chunk:vertical {
    <property name="styleSheet">
     <string notr="true"/>
    </property>
-   <layout class="QGridLayout" name="gridLayout_10">
+   <layout class="QVBoxLayout" name="verticalLayout_46">
+    <property name="spacing">
+     <number>0</number>
+    </property>
     <property name="leftMargin">
      <number>0</number>
     </property>
@@ -184,10 +187,7 @@ QProgressBar::chunk:vertical {
     <property name="bottomMargin">
      <number>0</number>
     </property>
-    <property name="spacing">
-     <number>0</number>
-    </property>
-    <item row="0" column="0">
+    <item>
      <widget class="QStackedWidget" name="stackedWidget">
       <property name="sizePolicy">
        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -898,7 +898,7 @@ background-color:#3a3a39;
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-264</y>
+                <y>-285</y>
                 <width>384</width>
                 <height>830</height>
                </rect>
@@ -1644,6 +1644,9 @@ background-color:#2c2c2b;
                     </property>
                     <item row="0" column="0">
                      <widget class="QScrollArea" name="rozbor_historie_scrollArea">
+                      <property name="verticalScrollBarPolicy">
+                       <enum>Qt::ScrollBarPolicy::ScrollBarAlwaysOn</enum>
+                      </property>
                       <property name="widgetResizable">
                        <bool>true</bool>
                       </property>
@@ -1652,9 +1655,15 @@ background-color:#2c2c2b;
                         <rect>
                          <x>0</x>
                          <y>0</y>
-                         <width>256</width>
+                         <width>244</width>
                          <height>205</height>
                         </rect>
+                       </property>
+                       <property name="styleSheet">
+                        <string notr="true">scrollAreaWidgetContents &gt;QWidget{
+background-color:black;
+color:red;
+}</string>
                        </property>
                       </widget>
                      </widget>
@@ -2122,7 +2131,7 @@ color:black	;
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>435</width>
+                   <width>88</width>
                    <height>718</height>
                   </rect>
                  </property>

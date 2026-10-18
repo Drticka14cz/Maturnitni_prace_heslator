@@ -34,7 +34,7 @@ def derive_key(password: str, salt: bytes) -> bytes:
 
 
 # Š I F R O V Á N Í
-def encrypt(data: bytes, password, key, salt):  # šifrování
+def encrypt(data: bytes, password=None, key=None, salt=None):  # šifrování
     print("Sifruji")
 
     if key == None:
@@ -99,11 +99,13 @@ def load_data(user_dir_path, heslo=None, key=None, salt=None):
 
 
 # Uložení dat
-def save_data(heslo, user_dir_path: str, data: dict, key, salt):
+def save_data(user_dir_path: str, data: dict, key: None, salt: None, heslo: None):
     try:
         json_bytes = json.dumps(data, ensure_ascii=False).encode("utf-8")
-
-        zasifrovano = encrypt(json_bytes, heslo, key, salt)
+        if heslo == None:
+            zasifrovano = encrypt(data=json_bytes, key=key, salt=salt)
+        else:
+            zasifrovano = encrypt(data=json_bytes, password=heslo)
         with open(user_dir_path, "wb") as f:
             f.write(zasifrovano)
             return True
@@ -123,7 +125,7 @@ def new_data(heslo, user_dir_path):
             "Dark_mode": True,
         },
     }
-    save_data(heslo, user_dir_path, data, None, None)
+    save_data(heslo=heslo, user_dir_path=user_dir_path, data=data)
     return data, True
 
 
@@ -267,11 +269,11 @@ class Rozbor:
         print(f"Nová data: {data}")
         print("posílám data na save")
         save_data(
-            None,
-            self.prihlaseno.user_dir_path,
-            data,
-            self.prihlaseno.key,
-            self.prihlaseno.salt,
+            user_dir_path=self.prihlaseno.user_dir_path,
+            data=data,
+            key=self.prihlaseno.key,
+            salt=self.prihlaseno.salt,
+            heslo=None,
         )
         print("po savu")
         return {
