@@ -145,6 +145,32 @@ class Heslator(QMainWindow):
     def rozbor(self):
         # Funkce která se sputsí hned po kliku na button
 
+        # Loadnutí již kontrolovaných dat
+
+        ######
+        data, uspech, klic, salt = load_data(
+            self.Přihlášeno.user_dir_path,
+            key=self.Přihlášeno.key,
+            salt=self.Přihlášeno.salt,
+        )
+        historie_rozbor_widget = self.ui.scrollAreaWidgetContents
+        historie_rozbor_widget_laout = QVBoxLayout(historie_rozbor_widget)
+        for i in data["historie_rozbor"]:
+            print(f"i = {i}")
+
+            radek_kontrola = QWidget()
+            layout = QHBoxLayout(radek_kontrola)
+
+            zobrazene_heslo = QLabel(i["heslo"])
+            zobrazena_sila = QLabel(str(i["final_bits"]))
+            zobrazeny_cas = QLabel(i["cas"])
+            layout.addWidget(zobrazene_heslo)
+            layout.addWidget(zobrazena_sila)
+            layout.addWidget(zobrazeny_cas)
+
+            historie_rozbor_widget_laout.addWidget(radek_kontrola)
+        ######
+
         # spustí na pozadí výpočet, zároveň loading animace.
 
         self.default_progress_bar()  # reset barvy
