@@ -29,13 +29,13 @@ def derive_key(password: str, salt: bytes) -> bytes:
     )
 
     key = kdf.derive(password.encode())
-    print(f"{key.hex()} je klic")
+    # print(f"{key.hex()} je klic")
     return key
 
 
 # Š I F R O V Á N Í
 def encrypt(data: bytes, password=None, key=None, salt=None):  # šifrování
-    print("Sifruji")
+    # print("Sifruji")
 
     if key == None:
         salt = os.urandom(16)  # generuju salt, 16 bitů
@@ -52,22 +52,22 @@ def encrypt(data: bytes, password=None, key=None, salt=None):  # šifrování
     aes = AESGCM(key)
 
     crypted_text = aes.encrypt(nonce, data, None)
-    print(f"Crypted text: {crypted_text}")
-    print(
-        f"vracím:{salt+nonce+crypted_text} kde salt je: {salt} nonce je {nonce} a crypted text je {crypted_text}"
-    )
+    # print(f"Crypted text: {crypted_text}")
+    # print(
+    #     f"vracím:{salt+nonce+crypted_text} kde salt je: {salt} nonce je {nonce} a crypted text je {crypted_text}"
+    # )
     return salt + nonce + crypted_text  # vracím salt nonce a šifrovaný text
 
 
 # D E Š I F R O V Á N Í
 def decrypt(encrypted_data: bytes, password, key) -> bytes:  # dešifrování
-    print("desifruji")
+    # print("desifruji")
     salt = encrypted_data[0:16]
-    print(f"SALT: {salt}")
+    # print(f"SALT: {salt}")
     nonce = encrypted_data[16:28]
-    print(f"NONCE: {nonce}")
+    # print(f"NONCE: {nonce}")
     data = encrypted_data[28:]
-    print(f"DATAAA: {data}")
+    # print(f"DATAAA: {data}")
     if key == None:
         key = derive_key(password, salt)
     else:
@@ -88,13 +88,13 @@ def load_data(user_dir_path, heslo=None, key=None, salt=None):
         with open(user_dir_path, "rb") as f:
             data_bytes = f.read()
 
-            print(f"náhodná mrdka v user1.dat: {data_bytes}")
+            # print(f"náhodná mrdka v user1.dat: {data_bytes}")
             desifrovana_bytes, key, salt = decrypt(data_bytes, heslo, key)
             json_string = desifrovana_bytes.decode("utf-8")
             data = json.loads(json_string)
             return data, True, key, salt
     except Exception as e:
-        print(f"nelze: {e}")
+        # print(f"nelze: {e}")
         return None, False, None, None
 
 
@@ -110,14 +110,14 @@ def save_data(user_dir_path: str, data: dict, key: None, salt: None, heslo: None
             f.write(zasifrovano)
             return True
     except Exception as e:
-        print(f"Chyba při uložení: {e}")
+        # print(f"Chyba při uložení: {e}")
         return False
 
 
 # Pokud již uživatel má svůj soubor ale je prázdný.
 def new_data(heslo, user_dir_path):
 
-    print("nová data")
+    # print("nová data")
     data = {
         "historie_rozbor": [],  # zde bude dict kde bude heslo score čas a čas rozboru
         "ulozena_hesla": [],  # zde bude platforma jméno heslo poznámka a score
@@ -152,9 +152,9 @@ class Login:
                 heslo=self.heslo, user_dir_path=user_dir_path
             )
             self.Prihlaseno = Přihlášeno(key, user_dir_path, salt)
-            print(
-                f"v logic key{self.Prihlaseno.key}"
-            )  # Lze dát .hex()díky žemu se to zobrazí líp
+            # print(
+            #     f"v logic key{self.Prihlaseno.key}"
+            # )  # Lze dát .hex()díky žemu se to zobrazí líp
             if self.prihlasen:
 
                 self.poznamka = "úspěšně přihlášen"
@@ -261,13 +261,13 @@ class Rozbor:
             key=self.prihlaseno.key,
             salt=self.prihlaseno.salt,
         )
-        print(f"Loadím data v rozboru: {data}")
+        # print(f"Loadím data v rozboru: {data}")
         cas = datetime.now().strftime("%d.%m.%Y %H:%M:%S")
         data["historie_rozbor"].append(
             {"heslo": self.heslo, "final_bits": self.final_bits, "cas": cas}
         )
-        print(f"Nová data: {data}")
-        print("posílám data na save")
+        # print(f"Nová data: {data}")
+        # print("posílám data na save")
         save_data(
             user_dir_path=self.prihlaseno.user_dir_path,
             data=data,
@@ -275,7 +275,7 @@ class Rozbor:
             salt=self.prihlaseno.salt,
             heslo=None,
         )
-        print("po savu")
+        # print("po savu")
         return {
             "final_bits": self.final_bits,
             "barva_sily": self.barva_sily,
@@ -336,9 +336,9 @@ class Rozbor:
             self.pot_zn += len(string.digits)
         if self.spec > 0:
             self.pot_zn += len(string.punctuation)
-        print(f"Potencialnich znaku je {self.pot_zn}")
+        # print(f"Potencialnich znaku je {self.pot_zn}")
         self.raw_bits = self.delka * math.log2(self.pot_zn)
-        print(f"Entropie hesla je: {self.raw_bits}")
+        # print(f"Entropie hesla je: {self.raw_bits}")
 
     def obsah_slovnikoveho_slova(self):
         self.nalezena_slova = []
@@ -396,11 +396,11 @@ class Rozbor:
             # print(f"Celkova entropie znaku {celkova_entropie_znaku}")
 
         # vypocet procenta
-        print(f"Celkova entropie znaku {celkova_entropie_znaku}")
+        # print(f"Celkova entropie znaku {celkova_entropie_znaku}")
         procento = celkova_entropie_znaku / maximalni_entropie_znaku
         self.penalized_coeficient = procento
         procento = procento * 100
-        print(f"procento je {procento}%")
+        # print(f"procento je {procento}%")
 
     # def potencialni_cas(self):
     #     self.cas = 2**self.raw_bits / 1e9
@@ -508,10 +508,10 @@ class Rozbor:
                     self.pocet_minuly = 0
 
     def penalizace(self):
-        print(f"penalizace slovníkem je: {self.penalized_bits}")
+        # print(f"penalizace slovníkem je: {self.penalized_bits}")
         self.final_bits = self.raw_bits * self.penalized_coeficient
         self.final_bits = self.final_bits - self.penalized_bits
-        print(f"Finální bity jsou: {self.final_bits}")
+        # print(f"Finální bity jsou: {self.final_bits}")
 
     def vyhodnoceni(self):
         if self.final_bits > 100:

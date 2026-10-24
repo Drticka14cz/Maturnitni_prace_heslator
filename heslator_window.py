@@ -47,6 +47,11 @@ class Heslator(QMainWindow):
         self.ui.menu_button_penezenka.clicked.connect(self.do_penezenka)
         # ------2 ROZBOR------
         self.ui.rozbor_button_rozebrat.clicked.connect(self.rozbor)
+
+        self.historie_rozbor_widget = (
+            self.ui.scrollAreaWidgetContents
+        )  # pro zobrazení historie rozboru - definice layoutu atd
+        self.historie_rozbor_widget_laout = QVBoxLayout(self.historie_rozbor_widget)
         # ------3 PENĚŽENKA------
 
         # ------4 GENERÁTOR ------
@@ -154,7 +159,8 @@ class Heslator(QMainWindow):
         self.default_progress_bar()  # reset barvy
         heslo = self.ui.rozbor_input.text().strip()  # input hesla
         self.ui.rozbor_progressBar_sila.setRange(0, 0)
-        self.ui.rozbor_progressBar_delka.setRange(0, 0)  # loading animace progress baru
+        self.ui.rozbor_progressBar_delka.setRange(0, 0)
+        self.ui.rozbor_progressBar_cas.setRange(0, 0)  # loading animace progress baru
         self.worker_rozbor = Worker_Rozbor(
             Rozbor, heslo, self.Přihlášeno
         )  # worker pro výpočet(rozbpr)
@@ -171,8 +177,16 @@ class Heslator(QMainWindow):
             key=self.Přihlášeno.key,
             salt=self.Přihlášeno.salt,
         )
-        historie_rozbor_widget = self.ui.scrollAreaWidgetContents
-        historie_rozbor_widget_laout = QVBoxLayout(historie_rozbor_widget)
+        print(f"Načetl jsem data: {data}")
+        # print(
+        #     f" rozbor zobrazení load vrací data: {data}\n pak vrací uspech: {uspech} \n pak klic {klic} \n pak sul {salt}"
+        # )
+
+        while self.historie_rozbor_widget_laout.count():
+            polozka = self.historie_rozbor_widget_laout.takeAt(0)
+            widget = polozka.widget()
+            if widget is not None:
+                widget.deleteLater()
         index = -1
         for i in data["historie_rozbor"]:
             index += 1
@@ -207,9 +221,9 @@ class Heslator(QMainWindow):
             )
             smazat = QPushButton("Smazat")
             smazat.clicked.connect(
-                lambda checked=False, idx=index, w=radek_kontrola: self.smazat_radek_historie(
-                    w, idx, data
-                )
+                lambda checked=False, cas_zaznamu=i[
+                    "cas"
+                ], w=radek_kontrola: self.smazat_radek_historie(w, cas_zaznamu)
             )
             layout.addWidget(zobrazene_heslo)
             layout.addWidget(zobrazena_sila)
@@ -217,21 +231,35 @@ class Heslator(QMainWindow):
             layout.addWidget(kopirovat)
             layout.addWidget(smazat)
 
-            historie_rozbor_widget_laout.addWidget(radek_kontrola)
+            self.historie_rozbor_widget_laout.addWidget(radek_kontrola)
 
     ######
-    def smazat_radek_historie(self, w, index, data):
-
-        w.deleteLater()
-
-        data["historie_rozbor"].pop(index)
-        save_data(
-            heslo=None,
-            user_dir_path=self.Přihlášeno.user_dir_path,
-            data=data,
+    def smazat_radek_historie(self, w, cas_zaznamu):
+        # 1. Načteme aktuální data
+        data, uspech, klic, salt = load_data(
+            self.Přihlášeno.user_dir_path,
             key=self.Přihlášeno.key,
             salt=self.Přihlášeno.salt,
         )
+
+        if data and "historie_rozbor" in data:
+            # 2. Smažeme prvek podle unikátního času (zabrání IndexError)
+            data["historie_rozbor"] = [
+                zaznam
+                for zaznam in data["historie_rozbor"]
+                if zaznam["cas"] != cas_zaznamu
+            ]
+
+            # 3. Uložíme změny
+            save_data(
+                user_dir_path=self.Přihlášeno.user_dir_path,
+                data=data,
+                key=self.Přihlášeno.key,
+                salt=self.Přihlášeno.salt,
+                heslo=None,
+            )
+
+        w.deleteLater()
         self.rozbor_zobrazit_historii()
 
     def kopirovat_radek_historie(self, heslo):
@@ -239,6 +267,8 @@ class Heslator(QMainWindow):
 
     def rozbor_dokoncen(self, data):
         # výpis  hodnot po dokončení výpočtu
+
+        print(f"V rozbor dokončen jsme dostali data což je: {data}")
 
         # síla a progress bar
         self.ui.rozbor_label_score.setText(str(data["final_bits"]))
@@ -309,6 +339,8 @@ width:5px;
                 nalezena_slova = nalezena_slova + ", " + i["slovo"]
 
         self.ui.rozbor_label_slovnikova_hodnota.setText(nalezena_slova)
+        print("Volám zobrazit historii v dokončeném rozboru")
+        self.rozbor_zobrazit_historii()
 
     def default_progress_bar(self):
         self.ui.rozbor_progressBar_sila.setStyleSheet(f"""
