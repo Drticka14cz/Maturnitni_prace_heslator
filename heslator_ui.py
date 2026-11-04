@@ -597,7 +597,7 @@ class Ui_MainWindow(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents_4 = QWidget()
         self.scrollAreaWidgetContents_4.setObjectName(u"scrollAreaWidgetContents_4")
-        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, -285, 384, 830))
+        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 384, 830))
         self.scrollAreaWidgetContents_4.setStyleSheet(u"#scrollAreaWidgetContents_4 >QWidget{\n"
 " background-color: #05C1FF;\n"
 "    border-radius: 16px;\n"
@@ -659,11 +659,6 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_13.addWidget(self.rozbor_label_score)
 
-        self.rozbor_label_popisSily = QLabel(self.widget_24)
-        self.rozbor_label_popisSily.setObjectName(u"rozbor_label_popisSily")
-
-        self.verticalLayout_13.addWidget(self.rozbor_label_popisSily)
-
 
         self.verticalLayout_12.addWidget(self.widget_24)
 
@@ -688,11 +683,6 @@ class Ui_MainWindow(object):
         self.rozbor_label_cas.setObjectName(u"rozbor_label_cas")
 
         self.verticalLayout_14.addWidget(self.rozbor_label_cas)
-
-        self.rozbor_label_popisCasu = QLabel(self.widget_25)
-        self.rozbor_label_popisCasu.setObjectName(u"rozbor_label_popisCasu")
-
-        self.verticalLayout_14.addWidget(self.rozbor_label_popisCasu)
 
 
         self.verticalLayout_12.addWidget(self.widget_25)
@@ -2112,10 +2102,8 @@ class Ui_MainWindow(object):
         self.label_14.setText(QCoreApplication.translate("MainWindow", u"Celkov\u00e1 s\u00edla hesla", None))
         self.rozbor_progressBar_sila.setFormat(QCoreApplication.translate("MainWindow", u"%p bit\u016f", None))
         self.rozbor_label_score.setText(QCoreApplication.translate("MainWindow", u"Score", None))
-        self.rozbor_label_popisSily.setText(QCoreApplication.translate("MainWindow", u"Popis s\u00edly", None))
         self.label_17.setText(QCoreApplication.translate("MainWindow", u"Odhadovan\u00fd \u010das pot\u0159ebn\u00fd k prolomen\u00ed hesla", None))
-        self.rozbor_label_cas.setText(QCoreApplication.translate("MainWindow", u"\u010cas", None))
-        self.rozbor_label_popisCasu.setText(QCoreApplication.translate("MainWindow", u"popis", None))
+        self.rozbor_label_cas.setText(QCoreApplication.translate("MainWindow", u"\u010cas:", None))
         self.rozbor_label_delka.setText(QCoreApplication.translate("MainWindow", u"D\u00e9lka", None))
         self.rozbor_progressBar_delka.setFormat(QCoreApplication.translate("MainWindow", u"%p znak\u016f", None))
         self.rozbor_label_mala.setText(QCoreApplication.translate("MainWindow", u"Mal\u00e1 p\u00edsmena", None))

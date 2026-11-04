@@ -209,6 +209,8 @@ class Rozbor:
     def __init__(self, heslo, prihlaseno):
         print(f"Přijímám rozbor - {heslo}")
 
+        self.tipy_za_s = 25_000
+
         self.prihlaseno = (
             prihlaseno  # funkce díky které máme key atd pro volání loadu a savu
         )
@@ -256,6 +258,10 @@ class Rozbor:
         self.entropie_znaku()
         self.penalizace()
         self.vyhodnoceni()
+        self.odhadovany_cas, self.odhadovany_class = self.potencialni_cas(
+            self.final_bits
+        )
+        self.maximalni_cas, self.maximalni_class = self.potencialni_cas(self.raw_bits)
         data, uspech, klic, salt = load_data(
             user_dir_path=self.prihlaseno.user_dir_path,
             key=self.prihlaseno.key,
@@ -286,6 +292,8 @@ class Rozbor:
             "spec": self.spec,
             "cisla": self.cislo,
             "delka": self.delka,
+            "cas": self.odhadovany_cas,
+            "cas_class": self.odhadovany_class,
         }
 
     def reset_promennych(self, heslo):
@@ -402,59 +410,60 @@ class Rozbor:
         procento = procento * 100
         # print(f"procento je {procento}%")
 
-    # def potencialni_cas(self):
-    #     self.cas = 2**self.raw_bits / 1e9
-    #     self.sekundy = round(self.cas, 5)
-    #     self.minuty = round(self.cas / 60, 2)
-    #     self.hodiny = round(self.minuty / 60, 2)
-    #     self.dny = round(self.hodiny / 24, 2)
-    #     self.tydny = round(self.dny / 7, 2)
-    #     self.mesice = round(self.tydny / 4, 2)
-    #     self.roky = round(self.mesice / 12, 2)
+    def potencialni_cas(self, bity):
+        self.cas = 2**bity / self.tipy_za_s
+        self.sekundy = round(self.cas, 5)
+        self.minuty = round(self.cas / 60, 2)
+        self.hodiny = round(self.minuty / 60, 2)
+        self.dny = round(self.hodiny / 24, 2)
+        self.tydny = round(self.dny / 7, 2)
+        self.mesice = round(self.tydny / 4, 2)
+        self.roky = round(self.mesice / 12, 2)
 
-    #     self.score += self.raw_bits
-    #     self.cas_class = 0
+        # self.score += self.raw_bits
+        self.cas_class = 0
 
-    #     if self.roky > 1:
-    #         if self.roky > 1000:
-    #             if self.roky > 1000000:
-    #                 if self.roky > 1000000000:
-    #                     self.cas_t = f"Více jak miliarda let"
-    #                     self.cas_class = 6
+        if self.roky > 1:
+            if self.roky > 1000:
+                if self.roky > 1000000:
+                    if self.roky > 1000000000:
+                        self.cas_t = f"Více jak miliarda let"
+                        self.cas_class = 6
 
-    #                 else:
-    #                     miliony = round(self.roky / 1000000, 2)
+                    else:
+                        miliony = round(self.roky / 1000000, 2)
 
-    #                     self.cas_t = f"{miliony} Milionů let"
-    #                     self.cas_class = 6
-    #             else:
-    #                 tisicileti = round(self.roky / 1000, 2)
-    #                 self.cas_t = f"{tisicileti} Tisíc let"
-    #                 self.cas_class = 6
-    #         else:
-    #             self.cas_t = f"{self.roky} Roků"
-    #             self.cas_class = 5
-    #     elif self.mesice > 1:
-    #         self.cas_t = f"{self.mesice} Měsíců"
-    #         self.cas_class = 4
-    #     elif self.tydny > 1:
-    #         self.cas_t = f"{self.tydny} Týdnů"
-    #         self.cas_class = 3
-    #     elif self.dny > 1:
-    #         self.cas_t = f"{self.dny} Dnů"
-    #         self.cas_class = 2
-    #     elif self.hodiny > 1:
-    #         self.cas_t = f"{self.hodiny} Hodin"
-    #         self.cas_class = 2
-    #     elif self.minuty > 1:
-    #         self.cas_t = f"{self.minuty} Minut"
-    #         self.cas_class = 1
-    #     else:
-    #         self.cas_t = f"{self.sekundy} Sekund"
-    #         self.cas_class = 1
-    #     self.cas2 = f"Maximální doba k prolomení hesla: {self.cas_t}"
+                        self.cas_t = f"{miliony} Milionů let"
+                        self.cas_class = 6
+                else:
+                    tisicileti = round(self.roky / 1000, 2)
+                    self.cas_t = f"{tisicileti} Tisíc let"
+                    self.cas_class = 6
+            else:
+                self.cas_t = f"{self.roky} Roků"
+                self.cas_class = 5
+        elif self.mesice > 1:
+            self.cas_t = f"{self.mesice} Měsíců"
+            self.cas_class = 4
+        elif self.tydny > 1:
+            self.cas_t = f"{self.tydny} Týdnů"
+            self.cas_class = 3
+        elif self.dny > 1:
+            self.cas_t = f"{self.dny} Dnů"
+            self.cas_class = 2
+        elif self.hodiny > 1:
+            self.cas_t = f"{self.hodiny} Hodin"
+            self.cas_class = 2
+        elif self.minuty > 1:
+            self.cas_t = f"{self.minuty} Minut"
+            self.cas_class = 1
+        else:
+            self.cas_t = f"{self.sekundy} Sekund"
+            self.cas_class = 1
+        self.cas2 = f"Odhadovaný čas je: {self.cas_t}"
 
-    # print(sekundy , minuty, hodiny, dny, tydny, mesice, roky)
+        # print(f"čas: {self.cas2}")
+        return self.cas2, self.cas_class
 
     def rozbor_pismen(self):
         for i in self.heslo:

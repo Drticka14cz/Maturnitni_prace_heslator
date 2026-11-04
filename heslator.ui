@@ -898,7 +898,7 @@ background-color:#3a3a39;
               <property name="geometry">
                <rect>
                 <x>0</x>
-                <y>-285</y>
+                <y>0</y>
                 <width>384</width>
                 <height>830</height>
                </rect>
@@ -1033,13 +1033,6 @@ background-color:#3a3a39;
                        </property>
                       </widget>
                      </item>
-                     <item>
-                      <widget class="QLabel" name="rozbor_label_popisSily">
-                       <property name="text">
-                        <string>Popis síly</string>
-                       </property>
-                      </widget>
-                     </item>
                     </layout>
                    </widget>
                   </item>
@@ -1078,14 +1071,7 @@ background-color:#3a3a39;
                      <item>
                       <widget class="QLabel" name="rozbor_label_cas">
                        <property name="text">
-                        <string>Čas</string>
-                       </property>
-                      </widget>
-                     </item>
-                     <item>
-                      <widget class="QLabel" name="rozbor_label_popisCasu">
-                       <property name="text">
-                        <string>popis</string>
+                        <string>Čas:</string>
                        </property>
                       </widget>
                      </item>

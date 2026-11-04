@@ -12,6 +12,7 @@ import pyperclip
 class Heslator(QMainWindow):
     def __init__(self):
         super().__init__()
+        self.Přihlášeno = None
         # //------ NAČTENÍ UI + LOAD PROGRAMU------\\
 
         # STARÉ NAČÍTÁNÍ
@@ -47,6 +48,11 @@ class Heslator(QMainWindow):
         self.ui.menu_button_penezenka.clicked.connect(self.do_penezenka)
         # ------2 ROZBOR------
         self.ui.rozbor_button_rozebrat.clicked.connect(self.rozbor)
+        self.zobrazit_historii = False
+        self.ui.rozbor_button_historie_zobrazit.clicked.connect(
+            self.rozbor_prepnout_historii
+        )
+        self.ui.rozbor_button_historie_delete.clicked.connect(self.smazat_historii)
 
         self.historie_rozbor_widget = (
             self.ui.scrollAreaWidgetContents
@@ -83,7 +89,6 @@ class Heslator(QMainWindow):
         self.ui.stackedWidget.setCurrentIndex(2)
         self.ui.rozbor_button_menu.clicked.connect(self.do_menu)
         print("rozbor")
-        self.rozbor_zobrazit_historii()
 
     def do_info(self):
         self.ui.stackedWidget.setCurrentIndex(5)
@@ -151,7 +156,8 @@ class Heslator(QMainWindow):
 
     def rozbor(self):
         # Funkce která se sputsí hned po kliku na button
-        self.rozbor_zobrazit_historii()
+        if self.zobrazit_historii == True:
+            self.rozbor_zobrazit_historii()
         # Loadnutí již kontrolovaných dat
 
         # spustí na pozadí výpočet, zároveň loading animace.
@@ -170,8 +176,37 @@ class Heslator(QMainWindow):
         self.ui.rozbor_label_heslo.setText(heslo)
         self.worker_rozbor.start()
 
+    def smazat_historii(self):
+        data, uspech, klic, salt = load_data(
+            self.Přihlášeno.user_dir_path,
+            key=self.Přihlášeno.key,
+            salt=self.Přihlášeno.salt,
+        )
+        data["historie_rozbor"] = []
+        save_data(
+            self.Přihlášeno.user_dir_path,
+            data,
+            self.Přihlášeno.key,
+            self.Přihlášeno.salt,
+            heslo=None,
+        )
+        self.zobrazit_historii = True
+        self.rozbor_zobrazit_historii()
+
+    def rozbor_prepnout_historii(self):
+        if self.Přihlášeno is None:
+            pass
+        else:
+            self.zobrazit_historii = not self.zobrazit_historii
+            self.rozbor_zobrazit_historii()
+
     def rozbor_zobrazit_historii(self):
+        if self.zobrazit_historii == False:
+            self.ui.scrollAreaWidgetContents.setVisible(False)
+            return
+
         ######
+        self.ui.scrollAreaWidgetContents.setVisible(True)
         data, uspech, klic, salt = load_data(
             self.Přihlášeno.user_dir_path,
             key=self.Přihlášeno.key,
@@ -271,7 +306,7 @@ class Heslator(QMainWindow):
         print(f"V rozbor dokončen jsme dostali data což je: {data}")
 
         # síla a progress bar
-        self.ui.rozbor_label_score.setText(str(data["final_bits"]))
+        self.ui.rozbor_label_score.setText(f"Síla: {data['final_bits']} bitů")
         self.ui.rozbor_progressBar_sila.setRange(
             0, 150
         )  # nastaví minimální a maximální hodnotu pro progressbar
@@ -293,6 +328,25 @@ width:5px;
 
 
 """)
+        # ČAS - progressbar a popisek
+        self.ui.rozbor_progressBar_cas.setRange(0, 7)
+        self.ui.rozbor_progressBar_cas.setValue(data["cas_class"])
+        self.ui.rozbor_progressBar_cas.setFormat("%v")
+        self.ui.rozbor_progressBar_cas.setStyleSheet(f"""
+        /* PROGRESS BAR*/
+        QProgressBar{{
+        border: 2px solid  black;
+        border-radius:8px;
+        height:5px;
+        text-align: center
+        }}
+        QProgressBar::chunk{{
+        background-color:{data["barva_sily"]};/* Mění barvu progress baru*/
+        width:5px;
+        }}""")
+
+        self.ui.rozbor_label_cas.setText(data["cas"])
+
         # počty znaků (malá, velká, čísla a znaky)
 
         self.ui.rozbor_progressBar_delka.setRange(0, 40)
