@@ -2,6 +2,7 @@ from PySide6.QtWidgets import *
 from PySide6.QtCore import *
 from PySide6.QtGui import *
 from PySide6.QtUiTools import QUiLoader  # Nástroj pro načtení .ui
+
 import zdroje_rc
 import os
 from heslator_logic import *
@@ -28,8 +29,8 @@ class Heslator(QMainWindow):
         # self.setCentralWidget(self.ui)
 
         # NOVÉ NAČÍTÁNÍ
-        self.ui = Ui_MainWindow()  # test
-        self.ui.setupUi(self)  # test
+        self.ui = Ui_MainWindow()
+        self.ui.setupUi(self)
 
         # //------NAČTENÍ ELEMENTŮ------\\
         self.ui.stackedWidget.setCurrentIndex(0)  # INDEX STRÁNKY
@@ -59,6 +60,8 @@ class Heslator(QMainWindow):
         )  # pro zobrazení historie rozboru - definice layoutu atd
         self.historie_rozbor_widget_laout = QVBoxLayout(self.historie_rozbor_widget)
         # ------3 PENĚŽENKA------
+        self.ui.penezenka_button_ulozit.clicked.connect(self.penezenka)
+        self.penezenka_widget_laout = QVBoxLayout(self.ui.penezenka_widget)
 
         # ------4 GENERÁTOR ------
         self.ui.generator_radioButton_heslo.toggled.connect(
@@ -73,7 +76,9 @@ class Heslator(QMainWindow):
         # ------5 INFO------
         # ------6 NASTAVENÍ------
 
+    #
     # ZPĚTNÉ BUTTONY DO MENU + login
+    #
     def do_prihlaseni(self):
         self.ui.stackedWidget.setCurrentIndex(0)
 
@@ -109,7 +114,9 @@ class Heslator(QMainWindow):
         self.ui.stackedWidget.setCurrentIndex(1)
         print("menu")
 
-        # ------0 LOGIN------
+    # //----- FUNKCE JEDNOTLIVÝCH STRÁNEK -----\\
+
+    # ------0 LOGIN------
 
     def login(self):
         self.ui.login_label_poznamka.setText("Přihlašuji...")
@@ -415,7 +422,73 @@ width:5px;
 
     def rozbor_chyba(self):
         print("chyba v rozboru")
+
         # ------3 PENĚŽENKA------
+
+    def penezenka(self):
+        heslo = self.ui.penezenka_heslo_input.text().strip()
+        jmeno = self.ui.penezenka_jmeno_input.text().strip()
+        poznamka = self.ui.penezenka_poznamka_poznamka.text().strip()
+        platforma = self.ui.penezenka_platforma_input.text().strip()
+        print("posílám uložit... Prayge")
+        Ulozeni(jmeno, heslo, platforma, poznamka, self.Přihlášeno, False)
+
+        data, uspech, klic, salt = load_data(
+            self.Přihlášeno.user_dir_path,
+            key=self.Přihlášeno.key,
+            salt=self.Přihlášeno.salt,
+        )
+        print(f"Načetl jsem data: {data}")
+        while self.penezenka_widget_laout.count():
+            polozka = self.penezenka_widget_laout.takeAt(0)
+            widget = polozka.widget()
+            if widget is not None:
+                widget.deleteLater()
+        index = -1
+        for i in data["ulozena_hesla"]:
+            index += 1
+            print(f"i = {i}")
+
+            ulozeny_radek = QFrame()  # něco se zde nezobrazuje, idk co
+            layout = QHBoxLayout(ulozeny_radek)
+
+            ulozeny_radek.setStyleSheet("""
+            QFrame {
+            background-color: #494948;
+            border: 1px solid  #3a3a39;
+            border-radius: 8px;
+            margin:2px;
+            margin-bottom: 5px;
+        }
+        QLabel{
+        font-size:10px;
+        color:#ffffff;
+        border: 0px solid black
+        }
+        """)
+
+            zobrazene_heslo = QLabel(i["heslo"])
+            # zobrazena_sila = QLabel(str(i["final_bits"]))
+            # zobrazeny_cas = QLabel(i["cas"])
+            kopirovat = QPushButton("Kopírovat")
+            kopirovat.clicked.connect(
+                lambda checked=False, heslo=i[
+                    "heslo"
+                ], w=ulozeny_radek: self.kopirovat_radek_historie(heslo)
+            )
+            smazat = QPushButton("Smazat")
+            smazat.clicked.connect(
+                lambda checked=False, cas_zaznamu=i[
+                    "cas"
+                ], w=ulozeny_radek: self.smazat_radek_historie(w, cas_zaznamu)
+            )
+            layout.addWidget(zobrazene_heslo)
+            # layout.addWidget(zobrazena_sila)
+            # layout.addWidget(zobrazeny_cas)
+            layout.addWidget(kopirovat)
+            layout.addWidget(smazat)
+
+            self.penezenka_widget_laout.addWidget(ulozeny_radek)
 
         # ------4 GENERÁTOR ------
 

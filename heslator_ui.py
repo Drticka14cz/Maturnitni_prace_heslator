@@ -597,7 +597,7 @@ class Ui_MainWindow(object):
         self.scrollArea_2.setWidgetResizable(True)
         self.scrollAreaWidgetContents_4 = QWidget()
         self.scrollAreaWidgetContents_4.setObjectName(u"scrollAreaWidgetContents_4")
-        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 384, 830))
+        self.scrollAreaWidgetContents_4.setGeometry(QRect(0, 0, 345, 830))
         self.scrollAreaWidgetContents_4.setStyleSheet(u"#scrollAreaWidgetContents_4 >QWidget{\n"
 " background-color: #05C1FF;\n"
 "    border-radius: 16px;\n"
@@ -1006,7 +1006,7 @@ class Ui_MainWindow(object):
         self.rozbor_historie_scrollArea.setWidgetResizable(True)
         self.scrollAreaWidgetContents = QWidget()
         self.scrollAreaWidgetContents.setObjectName(u"scrollAreaWidgetContents")
-        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 244, 205))
+        self.scrollAreaWidgetContents.setGeometry(QRect(0, 0, 84, 26))
         self.scrollAreaWidgetContents.setStyleSheet(u"scrollAreaWidgetContents >QWidget{\n"
 "background-color:black;\n"
 "color:red;\n"
@@ -1127,10 +1127,10 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_18.addWidget(self.label_16)
 
-        self.lineEdit_2 = QLineEdit(self.widget_39)
-        self.lineEdit_2.setObjectName(u"lineEdit_2")
+        self.penezenka_jmeno_input = QLineEdit(self.widget_39)
+        self.penezenka_jmeno_input.setObjectName(u"penezenka_jmeno_input")
 
-        self.verticalLayout_18.addWidget(self.lineEdit_2)
+        self.verticalLayout_18.addWidget(self.penezenka_jmeno_input)
 
         self.verticalSpacer_12 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
@@ -1156,10 +1156,10 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_20.addWidget(self.label_15)
 
-        self.lineEdit_4 = QLineEdit(self.widget_40)
-        self.lineEdit_4.setObjectName(u"lineEdit_4")
+        self.penezenka_heslo_input = QLineEdit(self.widget_40)
+        self.penezenka_heslo_input.setObjectName(u"penezenka_heslo_input")
 
-        self.verticalLayout_20.addWidget(self.lineEdit_4)
+        self.verticalLayout_20.addWidget(self.penezenka_heslo_input)
 
         self.verticalSpacer_14 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
@@ -1185,10 +1185,10 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_21.addWidget(self.label_18)
 
-        self.lineEdit_5 = QLineEdit(self.widget_41)
-        self.lineEdit_5.setObjectName(u"lineEdit_5")
+        self.penezenka_platforma_input = QLineEdit(self.widget_41)
+        self.penezenka_platforma_input.setObjectName(u"penezenka_platforma_input")
 
-        self.verticalLayout_21.addWidget(self.lineEdit_5)
+        self.verticalLayout_21.addWidget(self.penezenka_platforma_input)
 
         self.verticalSpacer_16 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
@@ -1214,10 +1214,10 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_22.addWidget(self.label_19)
 
-        self.lineEdit_6 = QLineEdit(self.widget_42)
-        self.lineEdit_6.setObjectName(u"lineEdit_6")
+        self.penezenka_poznamka_poznamka = QLineEdit(self.widget_42)
+        self.penezenka_poznamka_poznamka.setObjectName(u"penezenka_poznamka_poznamka")
 
-        self.verticalLayout_22.addWidget(self.lineEdit_6)
+        self.verticalLayout_22.addWidget(self.penezenka_poznamka_poznamka)
 
         self.verticalSpacer_18 = QSpacerItem(20, 40, QSizePolicy.Policy.Minimum, QSizePolicy.Policy.Expanding)
 
@@ -1236,10 +1236,10 @@ class Ui_MainWindow(object):
 
         self.verticalLayout_28.addItem(self.verticalSpacer_20)
 
-        self.pushButton = QPushButton(self.widget_43)
-        self.pushButton.setObjectName(u"pushButton")
+        self.penezenka_button_ulozit = QPushButton(self.widget_43)
+        self.penezenka_button_ulozit.setObjectName(u"penezenka_button_ulozit")
 
-        self.verticalLayout_28.addWidget(self.pushButton)
+        self.verticalLayout_28.addWidget(self.penezenka_button_ulozit)
 
 
         self.verticalLayout_23.addWidget(self.widget_43)
@@ -1267,7 +1267,7 @@ class Ui_MainWindow(object):
         self.scrollArea.setWidgetResizable(True)
         self.scroll_area_vypis_hesel = QWidget()
         self.scroll_area_vypis_hesel.setObjectName(u"scroll_area_vypis_hesel")
-        self.scroll_area_vypis_hesel.setGeometry(QRect(0, 0, 88, 718))
+        self.scroll_area_vypis_hesel.setGeometry(QRect(0, 0, 435, 718))
         self.verticalLayout_27 = QVBoxLayout(self.scroll_area_vypis_hesel)
         self.verticalLayout_27.setObjectName(u"verticalLayout_27")
         self.penezenka_widget = QWidget(self.scroll_area_vypis_hesel)
@@ -2070,7 +2070,7 @@ class Ui_MainWindow(object):
 
         self.retranslateUi(MainWindow)
 
-        self.stackedWidget.setCurrentIndex(2)
+        self.stackedWidget.setCurrentIndex(3)
 
 
         QMetaObject.connectSlotsByName(MainWindow)
@@ -2128,8 +2128,8 @@ class Ui_MainWindow(object):
         self.label_15.setText(QCoreApplication.translate("MainWindow", u"Heslo:", None))
         self.label_18.setText(QCoreApplication.translate("MainWindow", u"Platforma:", None))
         self.label_19.setText(QCoreApplication.translate("MainWindow", u"Pozn\u00e1mka:", None))
-        self.lineEdit_6.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Nepovinn\u00e9", None))
-        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"Ulo\u017eit", None))
+        self.penezenka_poznamka_poznamka.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Nepovinn\u00e9", None))
+        self.penezenka_button_ulozit.setText(QCoreApplication.translate("MainWindow", u"Ulo\u017eit", None))
         self.generator_button_menu.setText(QCoreApplication.translate("MainWindow", u"\u02c2", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Gener\u00e1tor", None))
         self.generator_radioButton_fraze.setText(QCoreApplication.translate("MainWindow", u"Generovat heslovou fr\u00e1zi", None))

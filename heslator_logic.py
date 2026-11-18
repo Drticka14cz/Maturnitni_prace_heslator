@@ -546,8 +546,63 @@ class Generator:
 
 
 class Ulozeni:
-    def __init__(self):
-        pass
+    def __init__(self, jmeno, heslo, platforma, poznámka, přihlášeno, reset):
+        self.jmeno = jmeno
+        self.heslo = heslo
+        self.platforma = platforma
+        self.poznamka = poznámka
+        self.reset = reset
+
+        self.prihlaseno = (
+            přihlášeno  # funkce díky které máme key atd pro volání loadu a savu
+        )
+
+        if self.reset:
+            self.reset_penezenky()
+        self.nacteni()
+        self.pridani()
+
+    def nacteni(self):
+        print("loaduju")
+        self.cas = datetime.now().strftime("%d.%m.%Y %H:%M:%S")
+
+        self.data, self.uspech, self.klic, self.salt = load_data(
+            user_dir_path=self.prihlaseno.user_dir_path,
+            key=self.prihlaseno.key,
+            salt=self.prihlaseno.salt,
+        )
+
+    def pridani(self):
+        print("přidávám data:")
+        self.data["ulozena_hesla"].append(
+            {
+                "jmeno": self.jmeno,
+                "heslo": self.heslo,
+                "platforma": self.platforma,
+                "poznamka": self.poznamka,
+                "cas": self.cas,
+            }
+        )
+        print(self.data)
+        save_data(
+            user_dir_path=self.prihlaseno.user_dir_path,
+            data=self.data,
+            key=self.prihlaseno.key,
+            salt=self.prihlaseno.salt,
+            heslo=None,
+        )
+        print("uloženo")
+
+    def reset_penezenky(self):
+        self.nacteni()
+        self.data["ulozena_hesla"] = []
+        save_data(
+            user_dir_path=self.prihlaseno.user_dir_path,
+            data=self.data,
+            key=self.prihlaseno.key,
+            salt=self.prihlaseno.salt,
+            heslo=None,
+        )
 
 
 class Nastaveni:

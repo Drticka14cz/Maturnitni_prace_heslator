@@ -216,7 +216,7 @@ background-color: #3a3a39;
 }</string>
       </property>
       <property name="currentIndex">
-       <number>2</number>
+       <number>3</number>
       </property>
       <widget class="QWidget" name="log_in">
        <layout class="QGridLayout" name="gridLayout">
@@ -899,7 +899,7 @@ background-color:#3a3a39;
                <rect>
                 <x>0</x>
                 <y>0</y>
-                <width>384</width>
+                <width>345</width>
                 <height>830</height>
                </rect>
               </property>
@@ -1641,8 +1641,8 @@ background-color:#2c2c2b;
                         <rect>
                          <x>0</x>
                          <y>0</y>
-                         <width>244</width>
-                         <height>205</height>
+                         <width>84</width>
+                         <height>26</height>
                         </rect>
                        </property>
                        <property name="styleSheet">
@@ -1858,7 +1858,7 @@ color:black	;
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLineEdit" name="lineEdit_2"/>
+                     <widget class="QLineEdit" name="penezenka_jmeno_input"/>
                     </item>
                     <item>
                      <spacer name="verticalSpacer_12">
@@ -1915,7 +1915,7 @@ color:black	;
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLineEdit" name="lineEdit_4"/>
+                     <widget class="QLineEdit" name="penezenka_heslo_input"/>
                     </item>
                     <item>
                      <spacer name="verticalSpacer_14">
@@ -1972,7 +1972,7 @@ color:black	;
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLineEdit" name="lineEdit_5"/>
+                     <widget class="QLineEdit" name="penezenka_platforma_input"/>
                     </item>
                     <item>
                      <spacer name="verticalSpacer_16">
@@ -2029,7 +2029,7 @@ color:black	;
                      </widget>
                     </item>
                     <item>
-                     <widget class="QLineEdit" name="lineEdit_6">
+                     <widget class="QLineEdit" name="penezenka_poznamka_poznamka">
                       <property name="placeholderText">
                        <string>Nepovinné</string>
                       </property>
@@ -2068,7 +2068,7 @@ color:black	;
                      </spacer>
                     </item>
                     <item>
-                     <widget class="QPushButton" name="pushButton">
+                     <widget class="QPushButton" name="penezenka_button_ulozit">
                       <property name="text">
                        <string>Uložit</string>
                       </property>
@@ -2117,7 +2117,7 @@ color:black	;
                   <rect>
                    <x>0</x>
                    <y>0</y>
-                   <width>88</width>
+                   <width>435</width>
                    <height>718</height>
                   </rect>
                  </property>
