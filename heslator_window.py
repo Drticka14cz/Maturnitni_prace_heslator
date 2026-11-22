@@ -260,7 +260,7 @@ class Heslator(QMainWindow):
             kopirovat.clicked.connect(
                 lambda checked=False, heslo=i[
                     "heslo"
-                ], w=radek_kontrola: self.kopirovat_radek_historie(heslo)
+                ], w=radek_kontrola: self.kopirovat_radek(heslo)
             )
             smazat = QPushButton("Smazat")
             smazat.clicked.connect(
@@ -305,7 +305,7 @@ class Heslator(QMainWindow):
         w.deleteLater()
         self.rozbor_zobrazit_historii()
 
-    def kopirovat_radek_historie(self, heslo):
+    def kopirovat_radek(self, heslo):
         QApplication.clipboard().setText(heslo)
 
     def rozbor_dokoncen(self, data):
@@ -480,28 +480,75 @@ width:5px;
             zobrazene_heslo = QPushButton(i["heslo"])
             zobrazene_jmeno = QPushButton(i["jmeno"])
             zobrazena_platforma = QPushButton(i["platforma"])
-            zobrazeny_poznamka = QPushButton(i["poznamka"])
+            zobrazena_poznamka = QPushButton(i["poznamka"])
 
             zobrazene_heslo.clicked.connect(
                 lambda checked=False, heslo=i[
                     "heslo"
-                ], w=ulozeny_radek: self.kopirovat_radek_historie(heslo)
+                ], w=ulozeny_radek: self.kopirovat_radek(heslo)
             )
+            zobrazene_jmeno.clicked.connect(
+                lambda checked=False, heslo=i[
+                    "jmeno"
+                ], w=ulozeny_radek: self.kopirovat_radek(heslo)
+            )
+            zobrazena_platforma.clicked.connect(
+                lambda checked=False, heslo=i[
+                    "platforma"
+                ], w=ulozeny_radek: self.kopirovat_radek(heslo)
+            )
+            zobrazena_poznamka.clicked.connect(
+                lambda checked=False, heslo=i[
+                    "poznamka"
+                ], w=ulozeny_radek: self.kopirovat_radek(heslo)
+            )
+
             smazat = QPushButton("Smazat")
             smazat.clicked.connect(
                 lambda checked=False, cas_zaznamu=i[
                     "cas"
-                ], w=ulozeny_radek: self.smazat_radek_historie(w, cas_zaznamu)
+                ], w=ulozeny_radek: self.smazat_radek_penezenka(w, cas_zaznamu)
             )
             layout.addWidget(zobrazena_platforma)
             layout.addWidget(zobrazene_jmeno)
             layout.addWidget(zobrazene_heslo)
 
-            layout.addWidget(zobrazeny_poznamka)
+            layout.addWidget(zobrazena_poznamka)
 
             layout.addWidget(smazat)
 
             self.penezenka_widget_laout.addWidget(ulozeny_radek)
+
+        self.penezenka_widget_laout.addSpacerItem(
+            QSpacerItem(20, 0, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        )
+
+    def smazat_radek_penezenka(self, w, cas_zaznamu):
+        print("pokouším se mazat řádek")
+        # 1. Načteme aktuální data
+        data, uspech, klic, salt = load_data(
+            self.Přihlášeno.user_dir_path,
+            key=self.Přihlášeno.key,
+            salt=self.Přihlášeno.salt,
+        )
+
+        if data and "ulozena_hesla" in data:
+            # 2. Smažeme prvek podle unikátního času (zabrání IndexError)
+            data["ulozena_hesla"] = [
+                zaznam
+                for zaznam in data["ulozena_hesla"]
+                if zaznam["cas"] != cas_zaznamu
+            ]
+
+            # 3. Uložíme změny
+            save_data(
+                user_dir_path=self.Přihlášeno.user_dir_path,
+                data=data,
+                key=self.Přihlášeno.key,
+                salt=self.Přihlášeno.salt,
+                heslo=None,
+            )
+            self.zobrazit_penezenku()
 
         # ------4 GENERÁTOR ------
 

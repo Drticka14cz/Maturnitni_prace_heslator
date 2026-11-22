@@ -1687,6 +1687,12 @@ color:red;
         </property>
         <item>
          <widget class="QWidget" name="background" native="true">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
           <layout class="QGridLayout" name="gridLayout_15" columnstretch="2,4">
            <property name="leftMargin">
             <number>30</number>
@@ -2156,6 +2162,15 @@ color:black	;
               </item>
               <item>
                <widget class="QScrollArea" name="scrollArea">
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="frameShape">
+                 <enum>QFrame::Shape::NoFrame</enum>
+                </property>
                 <property name="widgetResizable">
                  <bool>true</bool>
                 </property>
@@ -2165,8 +2180,20 @@ color:black	;
                    <x>0</x>
                    <y>0</y>
                    <width>435</width>
-                   <height>708</height>
+                   <height>10000</height>
                   </rect>
+                 </property>
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>0</width>
+                   <height>10000</height>
+                  </size>
                  </property>
                  <layout class="QVBoxLayout" name="verticalLayout_27">
                   <property name="spacing">
@@ -2186,6 +2213,12 @@ color:black	;
                   </property>
                   <item>
                    <widget class="QWidget" name="penezenka_widget" native="true">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
                     <property name="minimumSize">
                      <size>
                       <width>0</width>

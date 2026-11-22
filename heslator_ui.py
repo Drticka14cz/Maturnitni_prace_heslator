@@ -15,11 +15,11 @@ from PySide6.QtGui import (QBrush, QColor, QConicalGradient, QCursor,
     QFont, QFontDatabase, QGradient, QIcon,
     QImage, QKeySequence, QLinearGradient, QPainter,
     QPalette, QPixmap, QRadialGradient, QTransform)
-from PySide6.QtWidgets import (QApplication, QCheckBox, QGridLayout, QHBoxLayout,
-    QLabel, QLineEdit, QMainWindow, QProgressBar,
-    QPushButton, QRadioButton, QScrollArea, QSizePolicy,
-    QSlider, QSpacerItem, QStackedWidget, QStatusBar,
-    QVBoxLayout, QWidget)
+from PySide6.QtWidgets import (QApplication, QCheckBox, QFrame, QGridLayout,
+    QHBoxLayout, QLabel, QLineEdit, QMainWindow,
+    QProgressBar, QPushButton, QRadioButton, QScrollArea,
+    QSizePolicy, QSlider, QSpacerItem, QStackedWidget,
+    QStatusBar, QVBoxLayout, QWidget)
 import zdroje_rc
 
 class Ui_MainWindow(object):
@@ -1043,6 +1043,11 @@ class Ui_MainWindow(object):
         self.verticalLayout_26.setContentsMargins(0, 0, 0, 0)
         self.background = QWidget(self.penezenka)
         self.background.setObjectName(u"background")
+        sizePolicy1 = QSizePolicy(QSizePolicy.Policy.Preferred, QSizePolicy.Policy.Expanding)
+        sizePolicy1.setHorizontalStretch(0)
+        sizePolicy1.setVerticalStretch(0)
+        sizePolicy1.setHeightForWidth(self.background.sizePolicy().hasHeightForWidth())
+        self.background.setSizePolicy(sizePolicy1)
         self.gridLayout_15 = QGridLayout(self.background)
         self.gridLayout_15.setObjectName(u"gridLayout_15")
         self.gridLayout_15.setHorizontalSpacing(40)
@@ -1300,16 +1305,23 @@ class Ui_MainWindow(object):
 
         self.scrollArea = QScrollArea(self.widget_36)
         self.scrollArea.setObjectName(u"scrollArea")
+        self.scrollArea.setMinimumSize(QSize(0, 0))
+        self.scrollArea.setFrameShape(QFrame.Shape.NoFrame)
         self.scrollArea.setWidgetResizable(True)
         self.scroll_area_vypis_hesel = QWidget()
         self.scroll_area_vypis_hesel.setObjectName(u"scroll_area_vypis_hesel")
-        self.scroll_area_vypis_hesel.setGeometry(QRect(0, 0, 435, 708))
+        self.scroll_area_vypis_hesel.setGeometry(QRect(0, 0, 435, 10000))
+        sizePolicy1.setHeightForWidth(self.scroll_area_vypis_hesel.sizePolicy().hasHeightForWidth())
+        self.scroll_area_vypis_hesel.setSizePolicy(sizePolicy1)
+        self.scroll_area_vypis_hesel.setMinimumSize(QSize(0, 10000))
         self.verticalLayout_27 = QVBoxLayout(self.scroll_area_vypis_hesel)
         self.verticalLayout_27.setSpacing(32)
         self.verticalLayout_27.setObjectName(u"verticalLayout_27")
         self.verticalLayout_27.setContentsMargins(4, 4, 4, 4)
         self.penezenka_widget = QWidget(self.scroll_area_vypis_hesel)
         self.penezenka_widget.setObjectName(u"penezenka_widget")
+        sizePolicy1.setHeightForWidth(self.penezenka_widget.sizePolicy().hasHeightForWidth())
+        self.penezenka_widget.setSizePolicy(sizePolicy1)
         self.penezenka_widget.setMinimumSize(QSize(0, 700))
 
         self.verticalLayout_27.addWidget(self.penezenka_widget)
