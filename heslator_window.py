@@ -107,6 +107,7 @@ class Heslator(QMainWindow):
 
     def do_penezenka(self):
         self.ui.stackedWidget.setCurrentIndex(3)
+        self.zobrazit_penezenku()
         self.ui.penezenka_button_menu.clicked.connect(self.do_menu)
         print("penezenka")
 
@@ -432,7 +433,9 @@ width:5px;
         platforma = self.ui.penezenka_platforma_input.text().strip()
         print("posílám uložit... Prayge")
         Ulozeni(jmeno, heslo, platforma, poznamka, self.Přihlášeno, False)
+        self.zobrazit_penezenku()
 
+    def zobrazit_penezenku(self):
         data, uspech, klic, salt = load_data(
             self.Přihlášeno.user_dir_path,
             key=self.Přihlášeno.key,
@@ -450,6 +453,7 @@ width:5px;
             print(f"i = {i}")
 
             ulozeny_radek = QFrame()  # něco se zde nezobrazuje, idk co
+            ulozeny_radek.setMinimumHeight(48)
             layout = QHBoxLayout(ulozeny_radek)
 
             ulozeny_radek.setStyleSheet("""
@@ -459,19 +463,26 @@ width:5px;
             border-radius: 8px;
             margin:2px;
             margin-bottom: 5px;
-        }
-        QLabel{
-        font-size:10px;
-        color:#ffffff;
-        border: 0px solid black
-        }
-        """)
+            }
+            QLabel{
+            font-size:12px;
+            color:#ffffff;
+            border: 0px solid black
+            }
+            QPushButton{
+            background-color: #494948;
+            font-size:10px;
+            color:#ffffff;
+            border: 0px solid black
+            }
+            """)
 
-            zobrazene_heslo = QLabel(i["heslo"])
-            # zobrazena_sila = QLabel(str(i["final_bits"]))
-            # zobrazeny_cas = QLabel(i["cas"])
-            kopirovat = QPushButton("Kopírovat")
-            kopirovat.clicked.connect(
+            zobrazene_heslo = QPushButton(i["heslo"])
+            zobrazene_jmeno = QPushButton(i["jmeno"])
+            zobrazena_platforma = QPushButton(i["platforma"])
+            zobrazeny_poznamka = QPushButton(i["poznamka"])
+
+            zobrazene_heslo.clicked.connect(
                 lambda checked=False, heslo=i[
                     "heslo"
                 ], w=ulozeny_radek: self.kopirovat_radek_historie(heslo)
@@ -482,10 +493,12 @@ width:5px;
                     "cas"
                 ], w=ulozeny_radek: self.smazat_radek_historie(w, cas_zaznamu)
             )
+            layout.addWidget(zobrazena_platforma)
+            layout.addWidget(zobrazene_jmeno)
             layout.addWidget(zobrazene_heslo)
-            # layout.addWidget(zobrazena_sila)
-            # layout.addWidget(zobrazeny_cas)
-            layout.addWidget(kopirovat)
+
+            layout.addWidget(zobrazeny_poznamka)
+
             layout.addWidget(smazat)
 
             self.penezenka_widget_laout.addWidget(ulozeny_radek)

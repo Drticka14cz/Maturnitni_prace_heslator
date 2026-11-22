@@ -1262,14 +1262,52 @@ class Ui_MainWindow(object):
         self.verticalLayout_24.setSpacing(10)
         self.verticalLayout_24.setObjectName(u"verticalLayout_24")
         self.verticalLayout_24.setContentsMargins(10, 10, 10, 10)
+        self.widget_72 = QWidget(self.widget_36)
+        self.widget_72.setObjectName(u"widget_72")
+        self.widget_72.setStyleSheet(u"QLabel{\n"
+"color:black	;\n"
+"	font: 500 12pt \"Verdana\";\n"
+"}")
+        self.horizontalLayout_2 = QHBoxLayout(self.widget_72)
+        self.horizontalLayout_2.setObjectName(u"horizontalLayout_2")
+        self.label_28 = QLabel(self.widget_72)
+        self.label_28.setObjectName(u"label_28")
+
+        self.horizontalLayout_2.addWidget(self.label_28)
+
+        self.label_30 = QLabel(self.widget_72)
+        self.label_30.setObjectName(u"label_30")
+
+        self.horizontalLayout_2.addWidget(self.label_30)
+
+        self.label_31 = QLabel(self.widget_72)
+        self.label_31.setObjectName(u"label_31")
+
+        self.horizontalLayout_2.addWidget(self.label_31)
+
+        self.label_32 = QLabel(self.widget_72)
+        self.label_32.setObjectName(u"label_32")
+
+        self.horizontalLayout_2.addWidget(self.label_32)
+
+        self.label_33 = QLabel(self.widget_72)
+        self.label_33.setObjectName(u"label_33")
+
+        self.horizontalLayout_2.addWidget(self.label_33)
+
+
+        self.verticalLayout_24.addWidget(self.widget_72)
+
         self.scrollArea = QScrollArea(self.widget_36)
         self.scrollArea.setObjectName(u"scrollArea")
         self.scrollArea.setWidgetResizable(True)
         self.scroll_area_vypis_hesel = QWidget()
         self.scroll_area_vypis_hesel.setObjectName(u"scroll_area_vypis_hesel")
-        self.scroll_area_vypis_hesel.setGeometry(QRect(0, 0, 435, 718))
+        self.scroll_area_vypis_hesel.setGeometry(QRect(0, 0, 435, 708))
         self.verticalLayout_27 = QVBoxLayout(self.scroll_area_vypis_hesel)
+        self.verticalLayout_27.setSpacing(32)
         self.verticalLayout_27.setObjectName(u"verticalLayout_27")
+        self.verticalLayout_27.setContentsMargins(4, 4, 4, 4)
         self.penezenka_widget = QWidget(self.scroll_area_vypis_hesel)
         self.penezenka_widget.setObjectName(u"penezenka_widget")
         self.penezenka_widget.setMinimumSize(QSize(0, 700))
@@ -2130,6 +2168,11 @@ class Ui_MainWindow(object):
         self.label_19.setText(QCoreApplication.translate("MainWindow", u"Pozn\u00e1mka:", None))
         self.penezenka_poznamka_poznamka.setPlaceholderText(QCoreApplication.translate("MainWindow", u"Nepovinn\u00e9", None))
         self.penezenka_button_ulozit.setText(QCoreApplication.translate("MainWindow", u"Ulo\u017eit", None))
+        self.label_28.setText(QCoreApplication.translate("MainWindow", u"Platforma", None))
+        self.label_30.setText(QCoreApplication.translate("MainWindow", u"Jm\u00e9no", None))
+        self.label_31.setText(QCoreApplication.translate("MainWindow", u"Heslo", None))
+        self.label_32.setText(QCoreApplication.translate("MainWindow", u"Pozn\u00e1mka", None))
+        self.label_33.setText("")
         self.generator_button_menu.setText(QCoreApplication.translate("MainWindow", u"\u02c2", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"Gener\u00e1tor", None))
         self.generator_radioButton_fraze.setText(QCoreApplication.translate("MainWindow", u"Generovat heslovou fr\u00e1zi", None))
