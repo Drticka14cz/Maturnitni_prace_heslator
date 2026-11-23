@@ -210,7 +210,7 @@ class New_account:
 
 
 class Rozbor:
-    def __init__(self, heslo, prihlaseno):
+    def __init__(self, heslo, prihlaseno, ulozit):
         print(f"Přijímám rozbor - {heslo}")
 
         self.tipy_za_s = 25_000
@@ -218,6 +218,7 @@ class Rozbor:
         self.prihlaseno = (
             prihlaseno  # funkce díky které máme key atd pro volání loadu a savu
         )
+        self.ulozit = ulozit
 
         self.heslo = heslo.strip()
         self.mala = 0
@@ -266,39 +267,44 @@ class Rozbor:
             self.final_bits
         )
         self.maximalni_cas, self.maximalni_class = self.potencialni_cas(self.raw_bits)
-        data, uspech, klic, salt = load_data(
-            user_dir_path=self.prihlaseno.user_dir_path,
-            key=self.prihlaseno.key,
-            salt=self.prihlaseno.salt,
-        )
-        # print(f"Loadím data v rozboru: {data}")
-        cas = datetime.now().strftime("%d.%m.%Y %H:%M:%S")
-        data["historie_rozbor"].append(
-            {"heslo": self.heslo, "final_bits": self.final_bits, "cas": cas}
-        )
-        # print(f"Nová data: {data}")
-        # print("posílám data na save")
-        save_data(
-            user_dir_path=self.prihlaseno.user_dir_path,
-            data=data,
-            key=self.prihlaseno.key,
-            salt=self.prihlaseno.salt,
-            heslo=None,
-        )
-        # print("po savu")
-        return {
-            "final_bits": self.final_bits,
-            "barva_sily": self.barva_sily,
-            "nalezena_slova": self.nalezena_slova,
-            "pocet_nalezenych": self.pocet_nalezenych,
-            "mala": self.mala,
-            "velka": self.velka,
-            "spec": self.spec,
-            "cisla": self.cislo,
-            "delka": self.delka,
-            "cas": self.odhadovany_cas,
-            "cas_class": self.odhadovany_class,
-        }
+        if self.ulozit:
+            data, uspech, klic, salt = load_data(
+                user_dir_path=self.prihlaseno.user_dir_path,
+                key=self.prihlaseno.key,
+                salt=self.prihlaseno.salt,
+            )
+            # print(f"Loadím data v rozboru: {data}")
+            cas = datetime.now().strftime("%d.%m.%Y %H:%M:%S")
+            data["historie_rozbor"].append(
+                {"heslo": self.heslo, "final_bits": self.final_bits, "cas": cas}
+            )
+            # print(f"Nová data: {data}")
+            # print("posílám data na save")
+            save_data(
+                user_dir_path=self.prihlaseno.user_dir_path,
+                data=data,
+                key=self.prihlaseno.key,
+                salt=self.prihlaseno.salt,
+                heslo=None,
+            )
+            # print("po savu")
+            return {
+                "final_bits": self.final_bits,
+                "barva_sily": self.barva_sily,
+                "nalezena_slova": self.nalezena_slova,
+                "pocet_nalezenych": self.pocet_nalezenych,
+                "mala": self.mala,
+                "velka": self.velka,
+                "spec": self.spec,
+                "cisla": self.cislo,
+                "delka": self.delka,
+                "cas": self.odhadovany_cas,
+                "cas_class": self.odhadovany_class,
+            }
+        elif not self.ulozit:
+            print("Neukládám posílám finalbits")
+            print(self.final_bits)
+            return self.final_bits
 
     def reset_promennych(self, heslo):
         # kvůli workerovi volám dvakrát classu a tím pádem se výsledky zdovjnásobí,
@@ -549,17 +555,29 @@ class Generátor_Fráze:
         self.pocet_slov = pocet_slov
         self.specialni_uprava = specialni_uprava
         self.jazyk = "cz"
-        self.velikost_slovniku_cz = 4  # musim zjištovat dynamicky
-        self.velikost_slovniku_en = 4  # musim zjištovat dynamicky
+        self.fraze = ""
+        self.generovat()
 
     def generovat(self):
-        with open(generator_slovnik_cz, "r", encoding="utf-8") as f:
-            slovnik = f.read().splitlines()
-
+        if self.jazyk == "cz":
+            with open(generator_slovnik_cz, "r", encoding="utf-8") as f:
+                slovnik = f.read().splitlines()
+        else:
+            with open(generator_slovnik_en, "r", encoding="utf-8") as f:
+                slovnik = f.read().splitlines()
+        print(f"Loadnul jsem slovník {slovnik}")
         velikost_slovniku = len(slovnik)
-        for i in range(self.pocet_slov):
-            cislo_slova = random.randint(0, velikost_slovniku)
+        print(f"velikost slovníku je: {velikost_slovniku}")
+        for _ in range(self.pocet_slov):
+            cislo_slova = random.randint(0, velikost_slovniku - 1)
             print(f"Generuji číslo: {cislo_slova}")
+            print(slovnik[cislo_slova])
+            self.fraze = self.fraze + slovnik[cislo_slova]
+            print(self.fraze)
+        kontrola_fraze = Rozbor(heslo=self.fraze, ulozit=False, prihlaseno=None)
+        vysledek = kontrola_fraze.kontrola()
+        print(f"Fráze {self.fraze} má {vysledek} bitů")
+        return self.fraze, vysledek
 
 
 class Generátor_Hesla:
@@ -662,7 +680,7 @@ class Worker_Rozbor(QThread):
         try:
             print("posílám do rozboru")
 
-            rozebrano = Rozbor(self.heslo, self.prihlaseno)
+            rozebrano = Rozbor(self.heslo, self.prihlaseno, True)
             if len(self.heslo) > 0:
                 vysledek = rozebrano.kontrola()
             else:
@@ -714,6 +732,7 @@ class Worker_Generator(QThread):
                 generovana_fraze = Generátor_Fráze(
                     self.pocet_slov, self.specialni_fraze
                 )
+                generovana_fraze.kontrola()
                 self.finished.emit(generovana_fraze)
             elif self.metoda == "heslo":
                 generovane_heslo = Generátor_Hesla(

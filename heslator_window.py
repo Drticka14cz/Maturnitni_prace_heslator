@@ -89,6 +89,7 @@ class Heslator(QMainWindow):
         self.ui.stackedWidget.setCurrentIndex(4)
         self.ui.generator_button_menu.clicked.connect(self.do_menu)
         print("generator")
+        Generátor_Fráze(5, False)
 
     def do_rozbor(self):
         self.ui.stackedWidget.setCurrentIndex(2)
