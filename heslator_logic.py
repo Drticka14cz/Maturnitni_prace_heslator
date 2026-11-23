@@ -8,6 +8,7 @@ import string
 import math
 from PySide6.QtCore import QThread, Signal
 from datetime import datetime
+import random
 
 sys.stdout.reconfigure(encoding="utf-8")  # pro změnu šifrování znaků v terminálu
 
@@ -15,6 +16,9 @@ sys.stdout.reconfigure(encoding="utf-8")  # pro změnu šifrování znaků v ter
 dir_path = os.path.dirname(os.path.abspath(__file__))
 work_dir = os.path.join(dir_path, "work_files")
 large_slovnik = os.path.join(work_dir, "Pwdb_top-10000000.txt")
+generator_slovnik_cz = os.path.join(work_dir, "slovnik_generator_cz.txt")
+generator_slovnik_en = os.path.join(work_dir, "slovnik_generator_en.txt")
+
 guest_path = os.path.join(dir_path, "users", "guest.dat")
 
 
@@ -540,9 +544,42 @@ class Rozbor_uložení:
         self.nove_ulozeni = nove_ulozeni
 
 
-class Generator:
-    def __init__(self):
-        pass
+class Generátor_Fráze:
+    def __init__(self, pocet_slov, specialni_uprava):
+        self.pocet_slov = pocet_slov
+        self.specialni_uprava = specialni_uprava
+        self.jazyk = "cz"
+        self.velikost_slovniku_cz = 4  # musim zjištovat dynamicky
+        self.velikost_slovniku_en = 4  # musim zjištovat dynamicky
+
+    def generovat(self):
+        with open(generator_slovnik_cz, "r", encoding="utf-8") as f:
+            slovnik = f.read().splitlines()
+
+        velikost_slovniku = len(slovnik)
+        for i in range(self.pocet_slov):
+            cislo_slova = random.randint(0, velikost_slovniku)
+            print(f"Generuji číslo: {cislo_slova}")
+
+
+class Generátor_Hesla:
+    def __init__(
+        self,
+        pocet_znaku,
+        mala,
+        velka,
+        cisla,
+        specialni_znaky,
+        slovnikova_slova,
+        vlastni_slovnikove,
+    ):
+        self.pocet_znaku = pocet_znaku
+        self.mala = mala
+        self.velka = velka
+        self.cisla = cisla
+        self.specialni_znaky = specialni_znaky
+        self.slovnikova_slova = slovnikova_slova
+        self.vlastni_slovo = vlastni_slovnikove
 
 
 class Ulozeni:
@@ -616,7 +653,7 @@ class Worker_Rozbor(QThread):
     def __init__(self, metoda, heslo, Přihlášeno):
 
         super().__init__()
-        self.metoda = metoda
+        self.metoda = metoda  # nepoužívá se - může se smazat
         self.heslo = heslo
         self.prihlaseno = Přihlášeno
         print("Init workera")
@@ -635,5 +672,60 @@ class Worker_Rozbor(QThread):
             print("mame vysledek v workeru")
             # Rozbor_uložení(vysledek)
             self.finished.emit(vysledek)
+        except Exception as e:
+            print(f"problem {e}")
+
+
+class Worker_Generator(QThread):
+    def __init__(
+        self,
+        metoda,
+        pocet_slov,
+        specialni_fraze,
+        pocet_znaku,
+        mala,
+        velka,
+        cisla,
+        specialni_znaky,
+        slovnikova_slova,
+        vlastni_slovnikove,
+    ):
+        super().__init__()
+        self.metoda = metoda  # zda generujem frázi nebo heslo
+
+        # slovníková fráze
+        self.pocet_slov = pocet_slov
+        self.specialni_fraze = specialni_fraze
+
+        # heslo
+        self.pocet_znaku = pocet_znaku
+        self.mala = mala
+        self.velka = velka
+        self.cisla = cisla
+        self.specialni_znaky = specialni_znaky
+        self.slovnikova_slova = slovnikova_slova
+        self.vlastni_slovo = vlastni_slovnikove
+
+    def run(self):
+        try:
+            print("posílám do generátoru")
+
+            if self.metoda == "fraze":
+                generovana_fraze = Generátor_Fráze(
+                    self.pocet_slov, self.specialni_fraze
+                )
+                self.finished.emit(generovana_fraze)
+            elif self.metoda == "heslo":
+                generovane_heslo = Generátor_Hesla(
+                    self.pocet_znaku,
+                    self.mala,
+                    self.velka,
+                    self.cisla,
+                    self.specialni_znaky,
+                    self.slovnikova_slova,
+                    self.vlastni_slovo,
+                )
+                self.finished.emit(generovane_heslo)
+
         except Exception as e:
             print(f"problem {e}")
