@@ -556,6 +556,7 @@ class Generátor_Fráze:
         self.specialni_uprava = specialni_uprava
         self.jazyk = "cz"
         self.fraze = ""
+
         self.generovat()
 
     def generovat(self):
@@ -598,6 +599,46 @@ class Generátor_Hesla:
         self.specialni_znaky = specialni_znaky
         self.slovnikova_slova = slovnikova_slova
         self.vlastni_slovo = vlastni_slovnikove
+
+    def generovat(self):
+        heslo = ""
+        moznosti = []
+        if self.mala:
+            moznosti.append("mala")
+        if self.velka:
+            moznosti.append("velka")
+        if self.cisla:
+            moznosti.append("cisla")
+        if self.specialni_znaky:
+            moznosti.append("specialni")
+        if self.slovnikova_slova:
+            moznosti.append("slovnikova")
+        if self.vlastni_slovo != "":
+            moznosti.append("vlastni")
+
+        moznosti_delka = moznosti.len()
+        for i in range(self.pocet_znaku):
+            znak = moznosti[random.randint(0, moznosti_delka - 1)]
+            if znak == "mala":
+                m = list(string.ascii_lowercase)
+                d = len(string.ascii_lowercase)
+                heslo = heslo + m[random.randint(0, d - 1)]
+            if znak == "velka":
+                v = list(string.ascii_uppercase)
+                d = len(string.ascii_uppercase)
+                heslo = heslo + v[random.randint(0, d - 1)]
+            if znak == "cisla":
+                c = list(string.digits)
+                d = len(string.digits)
+                heslo = heslo + c[random.randint(0, d - 1)]
+            if znak == "specialni":
+                s = list(string.punctuation)
+                d = len(string.punctuation)
+                heslo = heslo + s[random.randint(0, d - 1)]
+            if znak == "slovnikova":
+                print("slovnikova")
+            if znak == "vlastni":
+                print("Vlastni")
 
 
 class Ulozeni:
@@ -695,18 +736,20 @@ class Worker_Rozbor(QThread):
 
 
 class Worker_Generator(QThread):
+    finished = Signal(str)
+
     def __init__(
         self,
         metoda,
-        pocet_slov,
-        specialni_fraze,
-        pocet_znaku,
-        mala,
-        velka,
-        cisla,
-        specialni_znaky,
-        slovnikova_slova,
-        vlastni_slovnikove,
+        pocet_slov=None,
+        specialni_fraze=None,
+        pocet_znaku=None,
+        mala=None,
+        velka=None,
+        cisla=None,
+        specialni_znaky=None,
+        slovnikova_slova=None,
+        vlastni_slovnikove="",
     ):
         super().__init__()
         self.metoda = metoda  # zda generujem frázi nebo heslo
@@ -732,8 +775,10 @@ class Worker_Generator(QThread):
                 generovana_fraze = Generátor_Fráze(
                     self.pocet_slov, self.specialni_fraze
                 )
-                generovana_fraze.kontrola()
-                self.finished.emit(generovana_fraze)
+                # generovana_fraze.kontrola()
+                print("výsledek ve workeru generátoru")
+                print(generovana_fraze.fraze)
+                self.finished.emit(generovana_fraze.fraze)
             elif self.metoda == "heslo":
                 generovane_heslo = Generátor_Hesla(
                     self.pocet_znaku,

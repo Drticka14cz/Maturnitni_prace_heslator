@@ -64,6 +64,7 @@ class Heslator(QMainWindow):
         self.penezenka_widget_laout = QVBoxLayout(self.ui.penezenka_widget)
 
         # ------4 GENERÁTOR ------
+        self.fraze = True
         self.ui.generator_radioButton_heslo.toggled.connect(
             self.generator_nabidka_heslo
         )
@@ -73,6 +74,7 @@ class Heslator(QMainWindow):
         # připojení zpětného tlačítka do menu
         # self.ui.generator_widget_fraze.hide()
         self.ui.generator_widget_heslo.hide()
+        self.ui.generator_button_generovat.clicked.connect(self.generovat)
         # ------5 INFO------
         # ------6 NASTAVENÍ------
 
@@ -89,7 +91,6 @@ class Heslator(QMainWindow):
         self.ui.stackedWidget.setCurrentIndex(4)
         self.ui.generator_button_menu.clicked.connect(self.do_menu)
         print("generator")
-        Generátor_Fráze(5, False)
 
     def do_rozbor(self):
         self.ui.stackedWidget.setCurrentIndex(2)
@@ -556,10 +557,51 @@ width:5px;
     def generator_nabidka_heslo(self):
         self.ui.generator_widget_fraze.hide()
         self.ui.generator_widget_heslo.show()
+        self.fraze = False
 
     def generator_nabidka_fraze(self):
         self.ui.generator_widget_fraze.show()
         self.ui.generator_widget_heslo.hide()
+        self.fraze = True
 
+    def generovat(self):
+        if self.fraze:
+            pocet_slov = self.ui.generator_pocet_slov.value()
+            specialni_uprava = self.ui.generator_check_spec.isChecked()
+            self.worker_generator = Worker_Generator(
+                "fraze", pocet_slov, specialni_uprava
+            )  # worker generování
+            self.worker_generator.finished.connect(self.generovani_dokonceno)
+            # self.worker.error.connect(self.rozbor_chyba)
+            self.worker_generator.finished.connect(self.worker_generator.deleteLater)
+
+            self.worker_generator.start()
+        else:
+            pocet_znaku = self.ui.generator_pocet_znaminek.value()
+            mala = self.ui.generator_check_mala.isChecked()
+            velka = self.ui.generator_check_velka.isChecked()
+            cisla = self.ui.generator_check_cisla.isChecked()
+            spec = self.ui.generator_check_spec.isChecked()
+            slovnikova_slova = self.ui.generator_check_slovnikova.isChecked()
+            vlastni = self.ui.generator_lineEdit_vlastni.text().strip()
+            self.worker_generator = Worker_Generator(
+                metoda="heslo",
+                mala=mala,
+                velka=velka,
+                pocet_znaku=pocet_znaku,
+                cisla=cisla,
+                specialni_znaky=spec,
+                slovnikova_slova=slovnikova_slova,
+                vlastni_slovnikove=vlastni,
+            )
+            self.worker_generator.finished.connect(self.generovani_dokonceno)
+
+            self.worker_generator.finished.connect(self.worker_generator.deleteLater)
+
+            self.worker_generator.start()
+
+    def generovani_dokonceno(self, vysledek):
+        self.ui.generator_label_vysledek.setText(vysledek)
+        print(f"generovani dokonceno mame vylsedek: {vysledek}")
         # ------5 INFO------
         # ------6 NASTAVENÍ------
