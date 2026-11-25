@@ -592,6 +592,7 @@ class Generátor_Hesla:
         slovnikova_slova,
         vlastni_slovnikove,
     ):
+        print("init generátoru hesla")
         self.pocet_znaku = pocet_znaku
         self.mala = mala
         self.velka = velka
@@ -599,6 +600,8 @@ class Generátor_Hesla:
         self.specialni_znaky = specialni_znaky
         self.slovnikova_slova = slovnikova_slova
         self.vlastni_slovo = vlastni_slovnikove
+        self.heslo = ""
+        self.generovat()
 
     def generovat(self):
         heslo = ""
@@ -616,8 +619,8 @@ class Generátor_Hesla:
         if self.vlastni_slovo != "":
             moznosti.append("vlastni")
 
-        moznosti_delka = moznosti.len()
-        for i in range(self.pocet_znaku):
+        moznosti_delka = len(moznosti)
+        for _ in range(self.pocet_znaku):
             znak = moznosti[random.randint(0, moznosti_delka - 1)]
             if znak == "mala":
                 m = list(string.ascii_lowercase)
@@ -636,9 +639,27 @@ class Generátor_Hesla:
                 d = len(string.punctuation)
                 heslo = heslo + s[random.randint(0, d - 1)]
             if znak == "slovnikova":
-                print("slovnikova")
+                self.jazyk = "cz"
+                if self.jazyk == "cz":
+                    with open(generator_slovnik_cz, "r", encoding="utf-8") as f:
+                        slovnik = f.read().splitlines()
+                else:
+                    with open(generator_slovnik_en, "r", encoding="utf-8") as f:
+                        slovnik = f.read().splitlines()
+                print(f"Loadnul jsem slovník {slovnik}")
+                velikost_slovniku = len(slovnik)
+                print(f"velikost slovníku je: {velikost_slovniku}")
+                
+                cislo_slova = random.randint(0, velikost_slovniku - 1)
+                    
+                print(slovnik[cislo_slova])
+                heslo = heslo + slovnik[cislo_slova]
+                    
+                   
             if znak == "vlastni":
-                print("Vlastni")
+                heslo = heslo + self.vlastni_slovo
+        print(f"Máme po forcyklu kde heslo je: {heslo}")
+        self.heslo = heslo
 
 
 class Ulozeni:
@@ -780,6 +801,7 @@ class Worker_Generator(QThread):
                 print(generovana_fraze.fraze)
                 self.finished.emit(generovana_fraze.fraze)
             elif self.metoda == "heslo":
+                print("Bude to heslo")
                 generovane_heslo = Generátor_Hesla(
                     self.pocet_znaku,
                     self.mala,
@@ -789,7 +811,7 @@ class Worker_Generator(QThread):
                     self.slovnikova_slova,
                     self.vlastni_slovo,
                 )
-                self.finished.emit(generovane_heslo)
+                self.finished.emit(generovane_heslo.heslo)
 
         except Exception as e:
             print(f"problem {e}")
