@@ -64,6 +64,7 @@ class Heslator(QMainWindow):
         self.penezenka_widget_laout = QVBoxLayout(self.ui.penezenka_widget)
 
         # ------4 GENERÁTOR ------
+        self.fraze = True
         self.ui.generator_radioButton_heslo.toggled.connect(
             self.generator_nabidka_heslo
         )
@@ -73,6 +74,7 @@ class Heslator(QMainWindow):
         # připojení zpětného tlačítka do menu
         # self.ui.generator_widget_fraze.hide()
         self.ui.generator_widget_heslo.hide()
+        self.ui.generator_button_generovat.clicked.connect(self.generovat)
         # ------5 INFO------
         # ------6 NASTAVENÍ------
 
@@ -107,6 +109,7 @@ class Heslator(QMainWindow):
 
     def do_penezenka(self):
         self.ui.stackedWidget.setCurrentIndex(3)
+        self.zobrazit_penezenku()
         self.ui.penezenka_button_menu.clicked.connect(self.do_menu)
         print("penezenka")
 
@@ -259,7 +262,7 @@ class Heslator(QMainWindow):
             kopirovat.clicked.connect(
                 lambda checked=False, heslo=i[
                     "heslo"
-                ], w=radek_kontrola: self.kopirovat_radek_historie(heslo)
+                ], w=radek_kontrola: self.kopirovat_radek(heslo)
             )
             smazat = QPushButton("Smazat")
             smazat.clicked.connect(
@@ -304,7 +307,7 @@ class Heslator(QMainWindow):
         w.deleteLater()
         self.rozbor_zobrazit_historii()
 
-    def kopirovat_radek_historie(self, heslo):
+    def kopirovat_radek(self, heslo):
         QApplication.clipboard().setText(heslo)
 
     def rozbor_dokoncen(self, data):
@@ -432,7 +435,9 @@ width:5px;
         platforma = self.ui.penezenka_platforma_input.text().strip()
         print("posílám uložit... Prayge")
         Ulozeni(jmeno, heslo, platforma, poznamka, self.Přihlášeno, False)
+        self.zobrazit_penezenku()
 
+    def zobrazit_penezenku(self):
         data, uspech, klic, salt = load_data(
             self.Přihlášeno.user_dir_path,
             key=self.Přihlášeno.key,
@@ -450,6 +455,7 @@ width:5px;
             print(f"i = {i}")
 
             ulozeny_radek = QFrame()  # něco se zde nezobrazuje, idk co
+            ulozeny_radek.setMinimumHeight(48)
             layout = QHBoxLayout(ulozeny_radek)
 
             ulozeny_radek.setStyleSheet("""
@@ -459,46 +465,143 @@ width:5px;
             border-radius: 8px;
             margin:2px;
             margin-bottom: 5px;
-        }
-        QLabel{
-        font-size:10px;
-        color:#ffffff;
-        border: 0px solid black
-        }
-        """)
+            }
+            QLabel{
+            font-size:12px;
+            color:#ffffff;
+            border: 0px solid black
+            }
+            QPushButton{
+            background-color: #494948;
+            font-size:10px;
+            color:#ffffff;
+            border: 0px solid black
+            }
+            """)
 
-            zobrazene_heslo = QLabel(i["heslo"])
-            # zobrazena_sila = QLabel(str(i["final_bits"]))
-            # zobrazeny_cas = QLabel(i["cas"])
-            kopirovat = QPushButton("Kopírovat")
-            kopirovat.clicked.connect(
+            zobrazene_heslo = QPushButton(i["heslo"])
+            zobrazene_jmeno = QPushButton(i["jmeno"])
+            zobrazena_platforma = QPushButton(i["platforma"])
+            zobrazena_poznamka = QPushButton(i["poznamka"])
+
+            zobrazene_heslo.clicked.connect(
                 lambda checked=False, heslo=i[
                     "heslo"
-                ], w=ulozeny_radek: self.kopirovat_radek_historie(heslo)
+                ], w=ulozeny_radek: self.kopirovat_radek(heslo)
             )
+            zobrazene_jmeno.clicked.connect(
+                lambda checked=False, heslo=i[
+                    "jmeno"
+                ], w=ulozeny_radek: self.kopirovat_radek(heslo)
+            )
+            zobrazena_platforma.clicked.connect(
+                lambda checked=False, heslo=i[
+                    "platforma"
+                ], w=ulozeny_radek: self.kopirovat_radek(heslo)
+            )
+            zobrazena_poznamka.clicked.connect(
+                lambda checked=False, heslo=i[
+                    "poznamka"
+                ], w=ulozeny_radek: self.kopirovat_radek(heslo)
+            )
+
             smazat = QPushButton("Smazat")
             smazat.clicked.connect(
                 lambda checked=False, cas_zaznamu=i[
                     "cas"
-                ], w=ulozeny_radek: self.smazat_radek_historie(w, cas_zaznamu)
+                ], w=ulozeny_radek: self.smazat_radek_penezenka(w, cas_zaznamu)
             )
+            layout.addWidget(zobrazena_platforma)
+            layout.addWidget(zobrazene_jmeno)
             layout.addWidget(zobrazene_heslo)
-            # layout.addWidget(zobrazena_sila)
-            # layout.addWidget(zobrazeny_cas)
-            layout.addWidget(kopirovat)
+
+            layout.addWidget(zobrazena_poznamka)
+
             layout.addWidget(smazat)
 
             self.penezenka_widget_laout.addWidget(ulozeny_radek)
+
+        self.penezenka_widget_laout.addSpacerItem(
+            QSpacerItem(20, 0, QSizePolicy.Minimum, QSizePolicy.Expanding)
+        )
+
+    def smazat_radek_penezenka(self, w, cas_zaznamu):
+        print("pokouším se mazat řádek")
+        # 1. Načteme aktuální data
+        data, uspech, klic, salt = load_data(
+            self.Přihlášeno.user_dir_path,
+            key=self.Přihlášeno.key,
+            salt=self.Přihlášeno.salt,
+        )
+
+        if data and "ulozena_hesla" in data:
+            # 2. Smažeme prvek podle unikátního času (zabrání IndexError)
+            data["ulozena_hesla"] = [
+                zaznam
+                for zaznam in data["ulozena_hesla"]
+                if zaznam["cas"] != cas_zaznamu
+            ]
+
+            # 3. Uložíme změny
+            save_data(
+                user_dir_path=self.Přihlášeno.user_dir_path,
+                data=data,
+                key=self.Přihlášeno.key,
+                salt=self.Přihlášeno.salt,
+                heslo=None,
+            )
+            self.zobrazit_penezenku()
 
         # ------4 GENERÁTOR ------
 
     def generator_nabidka_heslo(self):
         self.ui.generator_widget_fraze.hide()
         self.ui.generator_widget_heslo.show()
+        self.fraze = False
 
     def generator_nabidka_fraze(self):
         self.ui.generator_widget_fraze.show()
         self.ui.generator_widget_heslo.hide()
+        self.fraze = True
 
+    def generovat(self):
+        if self.fraze:
+            pocet_slov = self.ui.generator_pocet_slov.value()
+            specialni_uprava = self.ui.generator_check_spec.isChecked()
+            self.worker_generator = Worker_Generator(
+                "fraze", pocet_slov, specialni_uprava
+            )  # worker generování
+            self.worker_generator.finished.connect(self.generovani_dokonceno)
+            # self.worker.error.connect(self.rozbor_chyba)
+            self.worker_generator.finished.connect(self.worker_generator.deleteLater)
+
+            self.worker_generator.start()
+        else:
+            pocet_znaku = self.ui.generator_pocet_znaminek.value()
+            mala = self.ui.generator_check_mala.isChecked()
+            velka = self.ui.generator_check_velka.isChecked()
+            cisla = self.ui.generator_check_cisla.isChecked()
+            spec = self.ui.generator_check_spec.isChecked()
+            slovnikova_slova = self.ui.generator_check_slovnikova.isChecked()
+            vlastni = self.ui.generator_lineEdit_vlastni.text().strip()
+            self.worker_generator = Worker_Generator(
+                metoda="heslo",
+                mala=mala,
+                velka=velka,
+                pocet_znaku=pocet_znaku,
+                cisla=cisla,
+                specialni_znaky=spec,
+                slovnikova_slova=slovnikova_slova,
+                vlastni_slovnikove=vlastni,
+            )
+            self.worker_generator.finished.connect(self.generovani_dokonceno)
+
+            self.worker_generator.finished.connect(self.worker_generator.deleteLater)
+
+            self.worker_generator.start()
+
+    def generovani_dokonceno(self, vysledek):
+        self.ui.generator_label_vysledek.setText(vysledek)
+        print(f"generovani dokonceno mame vylsedek: {vysledek}")
         # ------5 INFO------
         # ------6 NASTAVENÍ------

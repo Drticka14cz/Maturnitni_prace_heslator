@@ -8,6 +8,7 @@ import string
 import math
 from PySide6.QtCore import QThread, Signal
 from datetime import datetime
+import random
 
 sys.stdout.reconfigure(encoding="utf-8")  # pro změnu šifrování znaků v terminálu
 
@@ -15,6 +16,9 @@ sys.stdout.reconfigure(encoding="utf-8")  # pro změnu šifrování znaků v ter
 dir_path = os.path.dirname(os.path.abspath(__file__))
 work_dir = os.path.join(dir_path, "work_files")
 large_slovnik = os.path.join(work_dir, "Pwdb_top-10000000.txt")
+generator_slovnik_cz = os.path.join(work_dir, "slovnik_generator_cz.txt")
+generator_slovnik_en = os.path.join(work_dir, "slovnik_generator_en.txt")
+
 guest_path = os.path.join(dir_path, "users", "guest.dat")
 
 
@@ -206,7 +210,7 @@ class New_account:
 
 
 class Rozbor:
-    def __init__(self, heslo, prihlaseno):
+    def __init__(self, heslo, prihlaseno, ulozit):
         print(f"Přijímám rozbor - {heslo}")
 
         self.tipy_za_s = 25_000
@@ -214,6 +218,7 @@ class Rozbor:
         self.prihlaseno = (
             prihlaseno  # funkce díky které máme key atd pro volání loadu a savu
         )
+        self.ulozit = ulozit
 
         self.heslo = heslo.strip()
         self.mala = 0
@@ -262,39 +267,44 @@ class Rozbor:
             self.final_bits
         )
         self.maximalni_cas, self.maximalni_class = self.potencialni_cas(self.raw_bits)
-        data, uspech, klic, salt = load_data(
-            user_dir_path=self.prihlaseno.user_dir_path,
-            key=self.prihlaseno.key,
-            salt=self.prihlaseno.salt,
-        )
-        # print(f"Loadím data v rozboru: {data}")
-        cas = datetime.now().strftime("%d.%m.%Y %H:%M:%S")
-        data["historie_rozbor"].append(
-            {"heslo": self.heslo, "final_bits": self.final_bits, "cas": cas}
-        )
-        # print(f"Nová data: {data}")
-        # print("posílám data na save")
-        save_data(
-            user_dir_path=self.prihlaseno.user_dir_path,
-            data=data,
-            key=self.prihlaseno.key,
-            salt=self.prihlaseno.salt,
-            heslo=None,
-        )
-        # print("po savu")
-        return {
-            "final_bits": self.final_bits,
-            "barva_sily": self.barva_sily,
-            "nalezena_slova": self.nalezena_slova,
-            "pocet_nalezenych": self.pocet_nalezenych,
-            "mala": self.mala,
-            "velka": self.velka,
-            "spec": self.spec,
-            "cisla": self.cislo,
-            "delka": self.delka,
-            "cas": self.odhadovany_cas,
-            "cas_class": self.odhadovany_class,
-        }
+        if self.ulozit:
+            data, uspech, klic, salt = load_data(
+                user_dir_path=self.prihlaseno.user_dir_path,
+                key=self.prihlaseno.key,
+                salt=self.prihlaseno.salt,
+            )
+            # print(f"Loadím data v rozboru: {data}")
+            cas = datetime.now().strftime("%d.%m.%Y %H:%M:%S")
+            data["historie_rozbor"].append(
+                {"heslo": self.heslo, "final_bits": self.final_bits, "cas": cas}
+            )
+            # print(f"Nová data: {data}")
+            # print("posílám data na save")
+            save_data(
+                user_dir_path=self.prihlaseno.user_dir_path,
+                data=data,
+                key=self.prihlaseno.key,
+                salt=self.prihlaseno.salt,
+                heslo=None,
+            )
+            # print("po savu")
+            return {
+                "final_bits": self.final_bits,
+                "barva_sily": self.barva_sily,
+                "nalezena_slova": self.nalezena_slova,
+                "pocet_nalezenych": self.pocet_nalezenych,
+                "mala": self.mala,
+                "velka": self.velka,
+                "spec": self.spec,
+                "cisla": self.cislo,
+                "delka": self.delka,
+                "cas": self.odhadovany_cas,
+                "cas_class": self.odhadovany_class,
+            }
+        elif not self.ulozit:
+            print("Neukládám posílám finalbits")
+            print(self.final_bits)
+            return self.final_bits
 
     def reset_promennych(self, heslo):
         # kvůli workerovi volám dvakrát classu a tím pádem se výsledky zdovjnásobí,
@@ -540,9 +550,95 @@ class Rozbor_uložení:
         self.nove_ulozeni = nove_ulozeni
 
 
-class Generator:
-    def __init__(self):
-        pass
+class Generátor_Fráze:
+    def __init__(self, pocet_slov, specialni_uprava):
+        self.pocet_slov = pocet_slov
+        self.specialni_uprava = specialni_uprava
+        self.jazyk = "cz"
+        self.fraze = ""
+
+        self.generovat()
+
+    def generovat(self):
+        if self.jazyk == "cz":
+            with open(generator_slovnik_cz, "r", encoding="utf-8") as f:
+                slovnik = f.read().splitlines()
+        else:
+            with open(generator_slovnik_en, "r", encoding="utf-8") as f:
+                slovnik = f.read().splitlines()
+        print(f"Loadnul jsem slovník {slovnik}")
+        velikost_slovniku = len(slovnik)
+        print(f"velikost slovníku je: {velikost_slovniku}")
+        for _ in range(self.pocet_slov):
+            cislo_slova = random.randint(0, velikost_slovniku - 1)
+            print(f"Generuji číslo: {cislo_slova}")
+            print(slovnik[cislo_slova])
+            self.fraze = self.fraze + slovnik[cislo_slova]
+            print(self.fraze)
+        kontrola_fraze = Rozbor(heslo=self.fraze, ulozit=False, prihlaseno=None)
+        vysledek = kontrola_fraze.kontrola()
+        print(f"Fráze {self.fraze} má {vysledek} bitů")
+        return self.fraze, vysledek
+
+
+class Generátor_Hesla:
+    def __init__(
+        self,
+        pocet_znaku,
+        mala,
+        velka,
+        cisla,
+        specialni_znaky,
+        slovnikova_slova,
+        vlastni_slovnikove,
+    ):
+        self.pocet_znaku = pocet_znaku
+        self.mala = mala
+        self.velka = velka
+        self.cisla = cisla
+        self.specialni_znaky = specialni_znaky
+        self.slovnikova_slova = slovnikova_slova
+        self.vlastni_slovo = vlastni_slovnikove
+
+    def generovat(self):
+        heslo = ""
+        moznosti = []
+        if self.mala:
+            moznosti.append("mala")
+        if self.velka:
+            moznosti.append("velka")
+        if self.cisla:
+            moznosti.append("cisla")
+        if self.specialni_znaky:
+            moznosti.append("specialni")
+        if self.slovnikova_slova:
+            moznosti.append("slovnikova")
+        if self.vlastni_slovo != "":
+            moznosti.append("vlastni")
+
+        moznosti_delka = moznosti.len()
+        for i in range(self.pocet_znaku):
+            znak = moznosti[random.randint(0, moznosti_delka - 1)]
+            if znak == "mala":
+                m = list(string.ascii_lowercase)
+                d = len(string.ascii_lowercase)
+                heslo = heslo + m[random.randint(0, d - 1)]
+            if znak == "velka":
+                v = list(string.ascii_uppercase)
+                d = len(string.ascii_uppercase)
+                heslo = heslo + v[random.randint(0, d - 1)]
+            if znak == "cisla":
+                c = list(string.digits)
+                d = len(string.digits)
+                heslo = heslo + c[random.randint(0, d - 1)]
+            if znak == "specialni":
+                s = list(string.punctuation)
+                d = len(string.punctuation)
+                heslo = heslo + s[random.randint(0, d - 1)]
+            if znak == "slovnikova":
+                print("slovnikova")
+            if znak == "vlastni":
+                print("Vlastni")
 
 
 class Ulozeni:
@@ -616,7 +712,7 @@ class Worker_Rozbor(QThread):
     def __init__(self, metoda, heslo, Přihlášeno):
 
         super().__init__()
-        self.metoda = metoda
+        self.metoda = metoda  # nepoužívá se - může se smazat
         self.heslo = heslo
         self.prihlaseno = Přihlášeno
         print("Init workera")
@@ -625,7 +721,7 @@ class Worker_Rozbor(QThread):
         try:
             print("posílám do rozboru")
 
-            rozebrano = Rozbor(self.heslo, self.prihlaseno)
+            rozebrano = Rozbor(self.heslo, self.prihlaseno, True)
             if len(self.heslo) > 0:
                 vysledek = rozebrano.kontrola()
             else:
@@ -635,5 +731,65 @@ class Worker_Rozbor(QThread):
             print("mame vysledek v workeru")
             # Rozbor_uložení(vysledek)
             self.finished.emit(vysledek)
+        except Exception as e:
+            print(f"problem {e}")
+
+
+class Worker_Generator(QThread):
+    finished = Signal(str)
+
+    def __init__(
+        self,
+        metoda,
+        pocet_slov=None,
+        specialni_fraze=None,
+        pocet_znaku=None,
+        mala=None,
+        velka=None,
+        cisla=None,
+        specialni_znaky=None,
+        slovnikova_slova=None,
+        vlastni_slovnikove="",
+    ):
+        super().__init__()
+        self.metoda = metoda  # zda generujem frázi nebo heslo
+
+        # slovníková fráze
+        self.pocet_slov = pocet_slov
+        self.specialni_fraze = specialni_fraze
+
+        # heslo
+        self.pocet_znaku = pocet_znaku
+        self.mala = mala
+        self.velka = velka
+        self.cisla = cisla
+        self.specialni_znaky = specialni_znaky
+        self.slovnikova_slova = slovnikova_slova
+        self.vlastni_slovo = vlastni_slovnikove
+
+    def run(self):
+        try:
+            print("posílám do generátoru")
+
+            if self.metoda == "fraze":
+                generovana_fraze = Generátor_Fráze(
+                    self.pocet_slov, self.specialni_fraze
+                )
+                # generovana_fraze.kontrola()
+                print("výsledek ve workeru generátoru")
+                print(generovana_fraze.fraze)
+                self.finished.emit(generovana_fraze.fraze)
+            elif self.metoda == "heslo":
+                generovane_heslo = Generátor_Hesla(
+                    self.pocet_znaku,
+                    self.mala,
+                    self.velka,
+                    self.cisla,
+                    self.specialni_znaky,
+                    self.slovnikova_slova,
+                    self.vlastni_slovo,
+                )
+                self.finished.emit(generovane_heslo)
+
         except Exception as e:
             print(f"problem {e}")
